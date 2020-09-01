@@ -19,6 +19,16 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 
 add_action( 'after_setup_theme', function (){
+    $wp_theme = wp_get_theme();
+    $is_theme_dt = strpos( $wp_theme->get_template(), "disciple-tools-theme" ) !== false || $wp_theme->name === "Disciple Tools";
+    if ( $is_theme_dt ) {
+        add_action( 'admin_notices', 'movement_maps_stats_plugin_must_not_be_disciple_tools' );
+        return false;
+    }
+    if ( ! is_multisite() ) {
+        add_action( 'admin_notices', 'movement_maps_stats_plugin_must_be_multisite' );
+        return false;
+    }
     return Movement_Maps_Stats::instance();
 }, 99 );
 
@@ -46,6 +56,7 @@ class Movement_Maps_Stats {
      * @since   0.1.0
      */
     public function __construct() {
+        $this->setup_db();
 
         // load short codes
         $files = scandir(plugin_dir_path(__FILE__) . 'shortcodes');
@@ -61,6 +72,24 @@ class Movement_Maps_Stats {
             add_filter( 'plugin_row_meta', [ $this, 'plugin_description_links' ], 10, 4 );
         }
     } // End __construct()
+
+    public function setup_db(){
+        global $wpdb;
+
+        if ( is_multisite() ) {
+            $enabled_sites = get_site_option( 'movement_map_approved_sites' );
+            // test if this site is approved through the multisite plugin
+            if ( isset( $enabled_sites[get_current_blog_id()] ) ) {
+                $wpdb->dt_movement_log = $enabled_sites[get_current_blog_id()]['table'];
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            // plugin cannot run on single site disciple tools system.
+            return false;
+        }
+    }
 
 
     /**
@@ -315,4 +344,21 @@ if ( ! function_exists('persecuted_countries' ) ){
             'Niger'
         ];
     }
+}
+
+function movement_maps_stats_plugin_must_be_multisite() {
+    $message = __( "'Movement Maps & Stats' plugin must be run on a multisite server with a network dashboard enabled disciple tools system. Please disable plugin.", "dt_dashboard_plugin" );
+    ?>
+    <div class="notice notice-error notice-dt-dashboard is-dismissible" data-notice="dt-dashboard">
+        <p><?php echo esc_html( $message );?></p>
+    </div>
+    <?php
+}
+function movement_maps_stats_plugin_must_not_be_disciple_tools() {
+    $message = __( "'Movement Maps & Stats' plugin is to be installed on a non-disciple tools website on a multisite server with a network dashboard enabled disciple tools system.", "dt_dashboard_plugin" );
+    ?>
+    <div class="notice notice-error notice-dt-dashboard is-dismissible" data-notice="dt-dashboard">
+        <p><?php echo esc_html( $message );?></p>
+    </div>
+    <?php
 }
