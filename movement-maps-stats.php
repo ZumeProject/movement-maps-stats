@@ -1,17 +1,17 @@
 <?php
 /**
- * Plugin Name: Zúme - Vision Maps and Stats
- * Plugin URI: https://github.com/DiscipleTools/disciple-tools-one-page-extension
- * Description: One page extension of Disciple Tools
- * Version:  0.1.0
- * Author URI: https://github.com/DiscipleTools
- * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-one-page-extension
+ * Plugin Name: Movement Maps and Stats
+ * Plugin URI: https://github.com/ZumeProject/movement-maps-stats
+ * Description: Short code pack of maps and stats for public display of Disciple Tools Network. Designed for the Zúme Vision, but open source and can be forked.
+ * Version:  0.1
+ * Author URI: https://github.com/ZumeProject
+ * GitHub Plugin URI: https://github.com/ZumeProject/movement-maps-stats
  * Requires at least: 4.7.0
  * (Requires 4.7+ because of the integration of the REST API at 4.7 and the security requirements of this milestone version.)
- * Tested up to: 5.3
+ * Tested up to: 5.5
  *
- * @package Disciple_Tools
- * @link    https://github.com/DiscipleTools
+ * @package Zume
+ * @link    https://github.com/ZumeProject
  * @license GPL-2.0 or later
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -19,17 +19,17 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 
 add_action( 'after_setup_theme', function (){
-    return Vision_Maps_Stats::instance();
-} );
+    return Movement_Maps_Stats::instance();
+}, 99 );
 
 
 /**
- * Class Vision_Maps_Stats
+ * Class Movement_Maps_Stats
  */
-class Vision_Maps_Stats {
+class Movement_Maps_Stats {
 
-    public $token = 'vision_maps_stats';
-    public $title = 'Vision Maps and Stats';
+    public $token = 'movement_maps_stats';
+    public $title = 'Movement Maps and Stats';
     public $permissions = 'manage_options';
 
     /**  Singleton */
@@ -46,9 +46,15 @@ class Vision_Maps_Stats {
      * @since   0.1.0
      */
     public function __construct() {
-        if ( ! is_admin() ) {
-            require_once('shortcode-map-last100.php');
+
+        // load short codes
+        $files = scandir(plugin_dir_path(__FILE__) . 'shortcodes');
+        foreach ( $files as $file ) {
+            if ( 'shortcode' === substr( $file, 0, 9 ) ){
+                require_once( plugin_dir_path(__FILE__) . 'shortcodes/' . $file );
+            }
         }
+
         if ( is_admin() ) {
             add_action( "admin_menu", [ $this, "register_menu" ] );
             // adds links to the plugin description area in the plugin admin list.
@@ -117,13 +123,13 @@ class Vision_Maps_Stats {
         <table class="widefat striped">
             <thead>
             <tr>
-                <th>Header</th>
+                <th>Short Codes</th>
             </tr>
             </thead>
             <tbody>
             <tr>
                 <td>
-                    <?php do_action( 'zume_vision_short_codes' ) ?>
+                    <?php do_action( 'movement_maps_stats_shortcodes_list' ) ?>
                 </td>
             </tr>
             </tbody>
@@ -251,5 +257,62 @@ class Vision_Maps_Stats {
 }
 
 // Register activation hook.
-register_activation_hook( __FILE__, [ 'Vision_Maps_Stats', 'activation' ] );
-register_deactivation_hook( __FILE__, [ 'Vision_Maps_Stats', 'deactivation' ] );
+register_activation_hook( __FILE__, [ 'Movement_Maps_Stats', 'activation' ] );
+register_deactivation_hook( __FILE__, [ 'Movement_Maps_Stats', 'deactivation' ] );
+
+if ( ! function_exists('persecuted_countries' ) ){
+    function persecuted_countries() : array {
+        return [
+            'North Korea',
+            'Afghanistan',
+            'Somolia',
+            'Libya',
+            'Pakistan',
+            'Eritrea',
+            'Sudan',
+            'Yemen',
+            'Iran',
+            'India',
+            'Syria',
+            'Nigeria',
+            'Saudi Arabia',
+            'Maldives',
+            'Iraq',
+            'Egypt',
+            'Algeria',
+            'Uzbekistan',
+            'Myanmar',
+            'Laos',
+            'Vietnam',
+            'Turkmenistan',
+            'China',
+            'Mauritania',
+            'Central African Republic',
+            'Morocco',
+            'Qatar',
+            'Burkina Faso',
+            'Mali',
+            'Sri Lanka',
+            'Tajikistan',
+            'Nepal',
+            'Jordan',
+            'Tunisia',
+            'Kazakhstan',
+            'Turkey',
+            'Brunei',
+            'Bangladesh',
+            'Ethiopia',
+            'Malaysia',
+            'Colombia',
+            'Oman',
+            'Kuwait',
+            'Kenya',
+            'Bhutan',
+            'Russian Federation',
+            'United Arab Emirates',
+            'Cameroon',
+            'Indonesia',
+            'Niger'
+        ];
+    }
+}

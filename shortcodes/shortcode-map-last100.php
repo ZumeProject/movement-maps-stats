@@ -20,6 +20,8 @@ class Zume_Maps_Last100
         add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ], 99 );
         add_shortcode( 'last100hours', [ $this, 'short_code' ] );
         add_action( 'rest_api_init', [ $this, 'add_api_routes' ] );
+        add_action( 'movement_maps_stats_shortcodes_list', [ $this, 'instructions_for_shortcode'] );
+
     }
 
     public function register_scripts(){
@@ -36,10 +38,10 @@ class Zume_Maps_Last100
 
         // require classes
         if ( ! class_exists( 'DT_Ipstack_API' ) ) {
-            require_once( plugin_dir_path(__FILE__) . '/dt-mapping/geocode-api/ipstack-api.php' );
+            require_once( plugin_dir_path(__DIR__) . '/dt-mapping/geocode-api/ipstack-api.php' );
         }
         if ( ! class_exists( 'DT_Mapbox_API' ) ) {
-            require_once( plugin_dir_path(__FILE__) . '/dt-mapping/geocode-api/mapbox-api.php' );
+            require_once( plugin_dir_path(__DIR__) . '/dt-mapping/geocode-api/mapbox-api.php' );
         }
 
         // call registered scripts
@@ -165,7 +167,7 @@ class Zume_Maps_Last100
                 <div id="dynamic-styles"></div>
                 <div id="map-wrapper">
                     <div id='map'></div>
-                    <div id="map-loader" class="spinner-loader"><img src="<?php echo plugin_dir_url(__FILE__) ?>/spinner.svg" width="100px" /></div>
+                    <div id="map-loader" class="spinner-loader"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="100px" /></div>
                     <div id="map-header"><h3>Last 100 Hours of Zúme</h3></div>
                 </div>
             </div>
@@ -311,7 +313,7 @@ class Zume_Maps_Last100
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div id="list-loader" class="spinner-loader"><img src="<?php echo plugin_dir_url(__FILE__) ?>/spinner.svg" width="50px" /> </div>
+                <div id="list-loader" class="spinner-loader"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /> </div>
                 <!-- Activity List -->
                 <div id="activity-wrapper">
                     <ul id="activity-list"></ul>
@@ -843,9 +845,9 @@ class Zume_Maps_Last100
 
             $counts[$category]++;
 
-            $restricted = [ 'Pakistan', 'Saudi Arabia', 'Indonesia', 'United Arab Emirates', 'Iran', 'China', 'Libya', 'Turkey']; // Somalia (top 50 persecuted country list, voice of the martyrs, 
+            $restricted = persecuted_countries();
 
-            if ( in_array( $restricted, $result['country'] ) ) {
+            if ( in_array( $result['country'], $restricted ) ) {
                 $lng = round($result['lng'], 0 );
                 $lat = round($result['lat'], 0 );
             } else {
@@ -879,6 +881,16 @@ class Zume_Maps_Last100
         );
 
         return $new_data;
+    }
+
+    public function instructions_for_shortcode(){
+        ?>
+        <p>
+            Last 100 Map<br>
+            <code>[last100hours]</code><br>
+            Add this to a page in the website and set template to empty container (full-width, no styling except header and footer.)
+        </p>
+        <?php
     }
 
 }
