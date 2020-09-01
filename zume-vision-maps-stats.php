@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Disciple.Tools Extension - Admin Page
+ * Plugin Name: Zúme - Vision Maps and Stats
  * Plugin URI: https://github.com/DiscipleTools/disciple-tools-one-page-extension
  * Description: One page extension of Disciple Tools
  * Version:  0.1.0
@@ -16,61 +16,21 @@
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-/**
- * PLEASE, RENAME CLASS AND FUNCTION NAMES BEFORE USING TEMPLATE
- * Rename these three strings:
- *      Admin Page
- *      Admin_Page
- *      admin_page
- */
-
 if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 
 add_action( 'after_setup_theme', function (){
-    $required_dt_theme_version = '0.22.0';
-    $wp_theme = wp_get_theme();
-    $version = $wp_theme->version;
-    /*
-     * Check if the Disciple.Tools theme is loaded and is the latest required version
-     */
-    $is_theme_dt = strpos( $wp_theme->get_template(), "disciple-tools-theme" ) !== false || $wp_theme->name === "Disciple Tools";
-    if ( $is_theme_dt && version_compare( $version, $required_dt_theme_version, "<" ) ) {
-        add_action('admin_notices', function () {
-            ?>
-            <div class="notice notice-error notice-admin_page is-dismissible" data-notice="admin_page">Disciple
-                Tools Theme not active or not latest version for Admin Page plugin.
-            </div><?php
-        });
-        return false;
-    }
-    if ( !$is_theme_dt ){
-        return false;
-    }
-    /**
-     * Load useful function from the theme
-     */
-    if ( !defined( 'DT_FUNCTIONS_READY' ) ){
-        require_once get_template_directory() . '/dt-core/global-functions.php';
-    }
-    /*
-     * Don't load the plugin on every rest request. Only those with the 'sample' namespace
-     */
-    $is_rest = dt_is_rest();
-    if ( !$is_rest || strpos( dt_get_url_path(), 'sample' ) !== false ){
-        return Admin_Page::instance();
-    }
-    return false;
+    return Vision_Maps_Stats::instance();
 } );
 
 
 /**
- * Class Admin_Page
+ * Class Vision_Maps_Stats
  */
-class Admin_Page {
+class Vision_Maps_Stats {
 
-    public $token = 'admin_page';
-    public $title = 'Admin Page';
-    public $permissions = 'manage_dt';
+    public $token = 'vision_maps_stats';
+    public $title = 'Vision Maps and Stats';
+    public $permissions = 'manage_options';
 
     /**  Singleton */
     private static $_instance = null;
@@ -86,40 +46,14 @@ class Admin_Page {
      * @since   0.1.0
      */
     public function __construct() {
-
+        if ( ! is_admin() ) {
+            require_once('shortcode-map-last100.php');
+        }
         if ( is_admin() ) {
             add_action( "admin_menu", [ $this, "register_menu" ] );
             // adds links to the plugin description area in the plugin admin list.
             add_filter( 'plugin_row_meta', [ $this, 'plugin_description_links' ], 10, 4 );
-
-            // Check for plugin updates
-            if ( ! class_exists( 'Puc_v4_Factory' ) ) {
-                require( get_template_directory() . '/dt-core/libraries/plugin-update-checker/plugin-update-checker.php' );
-            }
-            /**
-             * Below is the publicly hosted .json file that carries the version information. This file can be hosted
-             * anywhere as long as it is publicly accessible. You can download the version file listed below and use it as
-             * a template.
-             * Also, see the instructions for version updating to understand the steps involved.
-             * @see https://github.com/DiscipleTools/disciple-tools-version-control/wiki/How-to-Update-the-Starter-Plugin
-             * @todo enable this section with your own hosted file
-             * @todo An example of this file can be found in /includes/admin/disciple-tools-starter-plugin-version-control.json
-             * @todo It is recommended to host this version control file outside the project itself. Github is a good option for delivering static json.
-             */
-
-            /***** @todo remove from here
-
-            $hosted_json = "https://raw.githubusercontent.com/DiscipleTools/disciple-tools-version-control/master/disciple-tools-starter-plugin-version-control.json"; // @todo change this url
-            Puc_v4_Factory::buildUpdateChecker(
-            $hosted_json,
-            __FILE__,
-            'disciple-tools-starter-plugin'
-            );
-
-             ********* @todo to here */
         }
-
-
     } // End __construct()
 
 
@@ -189,7 +123,7 @@ class Admin_Page {
             <tbody>
             <tr>
                 <td>
-                    Content
+                    <?php do_action( 'zume_vision_short_codes' ) ?>
                 </td>
             </tr>
             </tbody>
@@ -231,10 +165,11 @@ class Admin_Page {
      * @return  array       $links_array
      */
     public function plugin_description_links( $links_array, $plugin_file_name, $plugin_data, $status ) {
-        if ( strpos( $plugin_file_name, basename( __FILE__ ) ) ) {
+
+        if ( strpos( $plugin_file_name,  basename( __FILE__ ) ) ) {
             // You can still use `array_unshift()` to add links at the beginning.
 
-            $links_array[] = '<a href="https://disciple.tools">Disciple.Tools Community</a>'; // @todo replace with your links.
+            $links_array[] = '<a href="https://github.com/ZumeProject/zume-vision-maps-stats">Github Project</a>';
 
             // add other links here
         }
@@ -316,5 +251,5 @@ class Admin_Page {
 }
 
 // Register activation hook.
-register_activation_hook( __FILE__, [ 'Admin_Page', 'activation' ] );
-register_deactivation_hook( __FILE__, [ 'Admin_Page', 'deactivation' ] );
+register_activation_hook( __FILE__, [ 'Vision_Maps_Stats', 'activation' ] );
+register_deactivation_hook( __FILE__, [ 'Vision_Maps_Stats', 'deactivation' ] );
