@@ -7,6 +7,7 @@ class Zume_Maps_Last100
 {
     public $namespace = 'zume/v4/';
     public $ip_response;
+    public static $languages;
 
     private static $_instance = null;
     public static function instance() {
@@ -736,6 +737,10 @@ class Zume_Maps_Last100
         return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 
+    public static function languages(){
+        return self::$languages = json_decode( file_get_contents(plugin_dir_path(__FILE__) . '/languages.json'), true );
+    }
+
     public static function query_contacts_points_geojson( $tz_name ) {
         global $wpdb;
 
@@ -744,9 +749,16 @@ class Zume_Maps_Last100
 
         $timestamp = strtotime('-100 hours' );
         $results = $wpdb->get_results( $wpdb->prepare( "
-                SELECT lng, lat, payload, action, category, country, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
+                SELECT action, category, lng, lat, label, payload, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
                 ", $timestamp ), ARRAY_A );
 
+        /**
+         * (none) - #0E172F
+         * Blessing - blessing- #21336A
+         * Great Blessing - great_blessing - #2CACE2
+         * Greater Blessing - greater_blessing - #90C741
+         * Greatest Blessing - greatest_blessing - #FAEA38
+         */
         $counts = [
             'blessing' => 0,
             'great_blessing' => 0,
@@ -756,112 +768,162 @@ class Zume_Maps_Last100
 
         $features = [];
         foreach ( $results as $result ) {
+            $payload = maybe_unserialize( $result['payload'] );
 
+            // BUILD NOTE
+
+            // time string
             $adjusted_time = $result['timestamp'] + $timezoneOffset;
-
             if ( $result['timestamp'] > strtotime('-1 hour') ) {
-                $time = self::time_elapsed_string('@'.$result['timestamp']);
+                $time_string = self::time_elapsed_string('@'.$result['timestamp']);
             }
             else if ( $result['timestamp'] > strtotime('today+00:00') + $timezoneOffset ) {
-                $time = date( 'g:i a', $adjusted_time );
+                $time_string = date( 'g:i a', $adjusted_time );
             }
             else {
-                $time = date( 'D g:i a', $adjusted_time );
+                $time_string = date( 'D g:i a', $adjusted_time );
             }
 
-            /**
-             * (none) - #0E172F
-             * Blessing - #21336A
-             * Great Blessing - #2CACE2
-             * Greater Blessing - #90C741
-             * Greatest Blessing - #FAEA38
-             */
-
-            // set action category label
-            $category = 'blessing';
-            switch ( $result['action'] ) {
-                case 'studied_1':
-                case 'studied_2':
-                case 'studied_3':
-                case 'studied_4':
-                case 'studied_5':
-                case 'studied_6':
-                case 'studied_7':
-                case 'studied_8':
-                case 'studied_9':
-                case 'studied_10':
-                case 'studied_11':
-                case 'studied_12':
-                case 'studied_13':
-                case 'studied_14':
-                case 'studied_15':
-                case 'studied_16':
-                case 'studied_17':
-                case 'studied_18':
-                case 'studied_19':
-                case 'studied_20':
-                case 'studied_21':
-                case 'studied_22':
-                case 'studied_23':
-                case 'studied_24':
-                case 'studied_25':
-                case 'studied_26':
-                case 'studied_27':
-                case 'studied_28':
-                case 'studied_29':
-                case 'studied_30':
-                case 'studied_31':
-                case 'studied_32':
-                case 'baptized': // @todo DT action
-                    $category = 'blessing';
-                    break;
-                case 'updated_3_month':
-                case 'joined_group':
-                case 'registered':
-                case 'started_group':
-                case 'leading_1':
-                case 'leading_2':
-                case 'leading_3':
-                case 'leading_4':
-                case 'leading_5':
-                case 'leading_6':
-                case 'leading_7':
-                case 'leading_8':
-                case 'leading_9':
-                case 'leading_10':
-                    $category = 'great_blessing';
-                    break;
-                case 'requested_coach':
-                case 'joined_community':
-                case 'started_church': // @todo DT action
-                    $category = 'greater_blessing';
-                    break;
-                case 'group_generation_reported': // @todo DT action
-                    $category = 'greatest_blessing';
-                    break;
-                default:
-                    break;
+            // language
+            $in_language = '';
+            if ( isset( $payload['language_name'] ) && ! empty( $payload['language_name'] ) && 'English' !== $payload['language_name'] ) {
+                $in_language = ' in ' . $payload['language_name'];
             }
 
-            $counts[$category]++;
-
+            // location string
+            $location_label = '';
             $restricted = persecuted_countries();
-
-            if ( in_array( $result['country'], $restricted ) ) {
+            if ( ! isset( $payload['country'] ) ) { // if country is not set, reduce precision to 111km
                 $lng = round($result['lng'], 0 );
                 $lat = round($result['lat'], 0 );
-            } else {
+            }
+            else if ( in_array( $payload['country'], $restricted ) ) { // if persecuted country, reduce precision to 111km
+                $location_label = ' (' . $payload['country'] . ')';
+                $lng = round($result['lng'], 0 );
+                $lat = round($result['lat'], 0 );
+            } else { // if non-persecuted country, reduce precision to 11km
+                $location_label = ' (' . $result['label'] . ')';
                 $lng = round($result['lng'], 1 );
                 $lat = round($result['lat'], 1 );
             }
 
+            // initials string
+            $initials = 'CC';
+            
+
+            // build note and blessing type
+            $blessing_type = 'blessing';
+            switch( $result['category'] ) {
+                case 'leading':
+                    switch($result['action']){
+                        case 'starting_group':
+                            $note =  $initials . ' is starting a training group' . $in_language . '! ' . $location_label;
+                            $blessing_type = 'greatest_blessing';
+                            break;
+                        case 'building_group':
+                            $note =  $initials . ' is growing a training group' . $in_language . '! ' . $location_label;
+                            $blessing_type = 'greatest_blessing';
+                            break;
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                        case '10':
+                            if ( isset($payload['group_size']) && $payload['group_size'] > 1 ) {
+                                $note =  $initials . ' is leading a group of '. $payload['group_size'] .' through session ' . $result['action'] . $in_language . '! ' . $location_label;
+                            } else {
+                                $note =  $initials . ' is leading a group through session ' . $result['action'] . $in_language . '! ' . $location_label;
+                            }
+                            $blessing_type = 'greatest_blessing';
+                            break;
+                    } // leading actions
+                    break;
+                case 'joining':
+                    switch($result['action']){
+                        case 'coaching':
+                            $note =  $initials . ' is requesting coaching from Zúme coaches' . $in_language . '! ' . $location_label;
+                            $blessing_type = 'great_blessing';
+                            break;
+                        case 'zume_training':
+                            $note =  $initials . ' is registering for Zúme training' . $in_language . '! ' . $location_label;
+                            $blessing_type = 'great_blessing';
+                            break;
+                        case 'zume_vision':
+                            $note =  $initials . ' is joining the Zúme community to engage in Disciple Making Movements' . $in_language . '! ' . $location_label;
+                            $blessing_type = 'greatest_blessing';
+                            break;
+                    } // leading actions
+                    break;
+                case 'studying':
+                    switch($result['action']){
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                        case '10':
+                        case '11':
+                        case '12':
+                        case '13':
+                        case '14':
+                        case '15':
+                        case '16':
+                        case '17':
+                        case '18':
+                        case '19':
+                        case '20':
+                        case '21':
+                        case '22':
+                        case '23':
+                        case '24':
+                        case '25':
+                        case '26':
+                        case '27':
+                        case '28':
+                        case '29':
+                        case '30':
+                        case '31':
+                        case '32':
+                        default:
+                            $title = ' disciple making movement principles';
+                            if ( isset( $payload['title'] ) && ! empty( $payload['title'] ) ) {
+                                $title = ' "' . $payload['title'] . '"';
+                            }
+                            $note =  $initials . ' is studying' . $title . $in_language . '! ' . $location_label;
+                            $blessing_type = 'blessing';
+                            break;
+                    }
+                    break;
+                case 'committing':
+                    switch($result['action']){
+                        case 'updated_3_month':
+                        default:
+                            $note =  $initials . '  made a three month plan to multiply disciples' . $in_language . '! ' . $location_label;
+                            $blessing_type = 'great_blessing';
+                            break;
+                    }
+                    break;
+                default:
+                    continue;
+            }
+
+            $counts[$blessing_type]++;
+
             $features[] = array(
                 'type' => 'Feature',
                 'properties' => array(
-                    "note" => $result['note'],
-                    "action" => $result['action'],
-                    "category" => $category,
-                    "time" => $time
+                    "note" => $note,
+                    "type" => $blessing_type,
+                    "time" => $time_string,
                 ),
                 'geometry' => array(
                     'type' => 'Point',
@@ -872,7 +934,8 @@ class Zume_Maps_Last100
                     ),
                 ),
             );
-        }
+
+        } // end foreach loop
 
         $new_data = array(
             'type' => 'FeatureCollection',
