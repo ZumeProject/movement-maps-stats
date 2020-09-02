@@ -744,7 +744,7 @@ class Zume_Maps_Last100
 
         $timestamp = strtotime('-100 hours' );
         $results = $wpdb->get_results( $wpdb->prepare( "
-                SELECT lng, lat, note, action, country, timestamp FROM zume_vision_log WHERE timestamp > %s ORDER BY timestamp DESC
+                SELECT lng, lat, payload, action, category, country, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
                 ", $timestamp ), ARRAY_A );
 
         $counts = [

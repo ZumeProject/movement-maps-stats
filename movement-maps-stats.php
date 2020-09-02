@@ -74,9 +74,8 @@ class Movement_Maps_Stats {
     } // End __construct()
 
     public function setup_db(){
-        global $wpdb;
-
         if ( is_multisite() ) {
+            global $wpdb;
             $enabled_sites = get_site_option( 'movement_map_approved_sites' );
             // test if this site is approved through the multisite plugin
             if ( isset( $enabled_sites[get_current_blog_id()] ) ) {
