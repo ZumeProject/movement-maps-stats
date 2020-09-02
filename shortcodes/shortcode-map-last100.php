@@ -3,9 +3,10 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 } // Exit if accessed directly.
 
-class Zume_Maps_Last100
+class Movement_Maps_Stats_Last100hours
 {
-    public $namespace = 'zume/v4/';
+    public $namespace = 'movement_maps_stats/v1/';
+    public $token = 'last100hours';
     public $ip_response;
     public static $languages;
 
@@ -19,7 +20,7 @@ class Zume_Maps_Last100
 
     public function __construct() {
         add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ], 99 );
-        add_shortcode( 'last100hours', [ $this, 'short_code' ] );
+        add_shortcode( $this->token, [ $this, 'short_code' ] );
         add_action( 'rest_api_init', [ $this, 'add_api_routes' ] );
         add_action( 'movement_maps_stats_shortcodes_list', [ $this, 'instructions_for_shortcode'] );
 
@@ -68,8 +69,8 @@ class Zume_Maps_Last100
                 ],
                 'settings' => [
                     'map_key' => DT_Mapbox_API::get_key(),
-                    'points_rest_url' => 'last100hours',
-                    'points_rest_base_url' => 'zume/v4/',
+                    'points_rest_url' => $this->token,
+                    'points_rest_base_url' => $this->namespace,
                 ]
             ]) ?>][0]
             /* ]]> */
@@ -688,7 +689,7 @@ class Zume_Maps_Last100
 
     public function add_api_routes() {
         register_rest_route(
-            'zume/v4', '/last100hours', [
+            $this->namespace, '/'.$this->token, [
                 [
                     'methods' => WP_REST_Server::CREATABLE,
                     'callback' => [$this, 'points_geojson'],
@@ -989,11 +990,11 @@ class Zume_Maps_Last100
         ?>
         <p>
             Last 100 Map<br>
-            <code>[last100hours]</code><br>
+            <code>[<?php echo $this->token ?>]</code><br>
             Add this to a page in the website and set template to empty container (full-width, no styling except header and footer.)
         </p>
         <?php
     }
 
 }
-Zume_Maps_Last100::instance();
+Movement_Maps_Stats_Last100hours::instance();
