@@ -466,7 +466,7 @@ class Movement_Maps_Stats_Last100hours
                                 },
                                 'circle-color': '#21336A'
                             },
-                            filter: ["==", "category", "blessing" ]
+                            filter: ["==", "type", "blessing" ]
                         });
                         map.setLayoutProperty('blessing', 'visibility', window.blessing);
 
@@ -488,7 +488,7 @@ class Movement_Maps_Stats_Last100hours
                                 },
                                 'circle-color': '#2CACE2'
                             },
-                            filter: ["==", "category", "great_blessing" ]
+                            filter: ["==", "type", "great_blessing" ]
                         });
                         map.setLayoutProperty('greatBlessing', 'visibility', window.great_blessing);
 
@@ -510,7 +510,7 @@ class Movement_Maps_Stats_Last100hours
                                 },
                                 'circle-color': '#90C741'
                             },
-                            filter: ["==", "category", "greater_blessing" ]
+                            filter: ["==", "type", "greater_blessing" ]
                         });
                         map.setLayoutProperty('greaterBlessing', 'visibility', window.greater_blessing);
 
@@ -532,7 +532,7 @@ class Movement_Maps_Stats_Last100hours
                                 },
                                 'circle-color': '#FAEA38'
                             },
-                            filter: ["==", "category", "greatest_blessing" ]
+                            filter: ["==", "type", "greatest_blessing" ]
                         });
                         map.setLayoutProperty('greatestBlessing', 'visibility', window.greatest_blessing);
 
@@ -599,21 +599,21 @@ class Movement_Maps_Stats_Last100hours
                         let filter_greatest_blessing = greatest_blessing_button.hasClass('filtered')
                         jQuery.each( points.features, function(i,v){
                             let visible = 'block'
-                            if ( 'blessing' === v.properties.category && filter_blessing ) {
+                            if ( 'blessing' === v.properties.type && filter_blessing ) {
                                 visible = 'none'
                             }
-                            if ( 'great_blessing' === v.properties.category && filter_great_blessing ) {
+                            if ( 'great_blessing' === v.properties.type && filter_great_blessing ) {
                                 visible = 'none'
                             }
-                            if ( 'greater_blessing' === v.properties.category && filter_greater_blessing ) {
+                            if ( 'greater_blessing' === v.properties.type && filter_greater_blessing ) {
                                 visible = 'none'
                             }
-                            if ( 'greatest_blessing' === v.properties.category && filter_greatest_blessing ) {
+                            if ( 'greatest_blessing' === v.properties.type && filter_greatest_blessing ) {
                                 visible = 'none'
                             }
 
                             if ( v.properties.note ) {
-                                list_container.append(`<li class="${v.properties.category}-activity" style="display:${visible}"><strong>${v.properties.time}</strong> - ${v.properties.note}</li>`)
+                                list_container.append(`<li class="${v.properties.type}-activity" style="display:${visible}"><strong>${v.properties.time}</strong> - ${v.properties.note}</li>`)
                             }
                         })
                         jQuery('#list-loader').hide()
