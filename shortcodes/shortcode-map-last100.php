@@ -808,8 +808,40 @@ class Zume_Maps_Last100
             }
 
             // initials string
-            $initials = 'CC';
-            
+            $letters = [
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'S',
+                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'D', 'E',
+                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
+                'E', 'A', 'R', 'I', 'T', 'N', 'S', 'L', 'E', 'A', 'R', 'I', 'N', 'S',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'C', 'D',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'A', 'B',
+                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'A', 'B',
+                'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'S',
+                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'D', 'E',
+                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
+                'E', 'A', 'R', 'I', 'T', 'N', 'S', 'L', 'E', 'A', 'R', 'I', 'N', 'S',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'C', 'D',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'A', 'B',
+                'E', 'A', 'R', 'I', 'T', 'N', 'S', 'L', 'E', 'A', 'R', 'I', 'N', 'S',
+                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'S',
+            ];
+            $fnum = abs( round($lng) );
+            $lnum = abs( round($lat) );
+            $list = str_split( hash( 'sha256', $payload ) );
+            foreach( $list as $character ){
+                if ( is_numeric( $character ) ) {
+                    $fnum = $fnum + $character;
+                    $lnum = $lnum + $character;
+                    break;
+                }
+            }
+            $initials = strtoupper( $letters[$fnum] . $letters[$lnum] );
+
 
             // build note and blessing type
             $blessing_type = 'blessing';
@@ -893,12 +925,19 @@ class Zume_Maps_Last100
                         case '30':
                         case '31':
                         case '32':
-                        default:
                             $title = ' disciple making movement principles';
                             if ( isset( $payload['title'] ) && ! empty( $payload['title'] ) ) {
                                 $title = ' "' . $payload['title'] . '"';
                             }
                             $note =  $initials . ' is studying' . $title . $in_language . '! ' . $location_label;
+                            $blessing_type = 'blessing';
+                            break;
+                        default:
+                            $string = '';
+                            if ( isset( $payload['note'] ) && ! empty( $payload['note'] ) ) {
+                                $string = esc_html( wp_unslash( $payload['note'] ) ) ;
+                            }
+                            $note =  $initials . ' ' . $string . $in_language . '! ' . $location_label;
                             $blessing_type = 'blessing';
                             break;
                     }
@@ -921,9 +960,9 @@ class Zume_Maps_Last100
             $features[] = array(
                 'type' => 'Feature',
                 'properties' => array(
-                    "note" => $note,
-                    "type" => $blessing_type,
-                    "time" => $time_string,
+                    "note" => esc_html( $note ),
+                    "type" => esc_attr( $blessing_type ),
+                    "time" => esc_attr( $time_string ),
                 ),
                 'geometry' => array(
                     'type' => 'Point',
