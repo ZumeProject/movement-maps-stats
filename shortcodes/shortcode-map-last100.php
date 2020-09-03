@@ -709,35 +709,6 @@ class Movement_Maps_Stats_Last100hours
         return self::query_contacts_points_geojson( $tz_name );
     }
 
-    public static function time_elapsed_string($datetime, $full = false) {
-        $now = new DateTime;
-        $ago = new DateTime($datetime);
-        $diff = $now->diff($ago);
-
-        $diff->w = floor($diff->d / 7);
-        $diff->d -= $diff->w * 7;
-
-        $string = array(
-            'y' => 'year',
-            'm' => 'month',
-            'w' => 'week',
-            'd' => 'day',
-            'h' => 'hour',
-            'i' => 'minute',
-            's' => 'second',
-        );
-        foreach ($string as $k => &$v) {
-            if ($diff->$k) {
-                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
-            } else {
-                unset($string[$k]);
-            }
-        }
-
-        if (!$full) $string = array_slice($string, 0, 1);
-        return $string ? implode(', ', $string) . ' ago' : 'just now';
-    }
-
     public static function query_contacts_points_geojson( $tz_name ) {
         global $wpdb;
 
@@ -770,202 +741,34 @@ class Movement_Maps_Stats_Last100hours
             // BUILD NOTE
 
             // time string
-            $adjusted_time = $result['timestamp'] + $timezoneOffset;
-            if ( $result['timestamp'] > strtotime('-1 hour') ) {
-                $time_string = self::time_elapsed_string('@'.$result['timestamp']);
-            }
-            else if ( $result['timestamp'] > strtotime('today+00:00') + $timezoneOffset ) {
-                $time_string = date( 'g:i a', $adjusted_time );
-            }
-            else {
-                $time_string = date( 'D g:i a', $adjusted_time );
-            }
+            $time_string = Movement_Shortcode_Utilities::create_time_string( $result['timestamp'], $timezoneOffset );
 
             // language
-            $in_language = '';
-            if ( isset( $payload['language_name'] ) && ! empty( $payload['language_name'] ) && 'English' !== $payload['language_name'] ) {
-                $in_language = ' in ' . $payload['language_name'];
-            }
-
-            // location string
-            $location_label = '';
-            $restricted = persecuted_countries();
-            if ( ! isset( $payload['country'] ) ) { // if country is not set, reduce precision to 111km
-                $lng = round($result['lng'], 0 );
-                $lat = round($result['lat'], 0 );
-            }
-            else if ( in_array( $payload['country'], $restricted ) ) { // if persecuted country, reduce precision to 111km
-                $location_label = ' (' . $payload['country'] . ')';
-                $lng = round($result['lng'], 0 );
-                $lat = round($result['lat'], 0 );
-            } else { // if non-persecuted country, reduce precision to 11km
-                $location_label = ' (' . $result['label'] . ')';
-                $lng = round($result['lng'], 1 );
-                $lat = round($result['lat'], 1 );
-            }
+            $in_language = Movement_Shortcode_Utilities::create_in_language_string( $payload );
 
             // initials string
-            $letters = [
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'S',
-                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'D', 'E',
-                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
-                'E', 'A', 'R', 'I', 'T', 'N', 'S', 'L', 'E', 'A', 'R', 'I', 'N', 'S',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'C', 'D',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'A', 'B',
-                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'A', 'B',
-                'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'S',
-                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'D', 'E',
-                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
-                'E', 'A', 'R', 'I', 'T', 'N', 'S', 'L', 'E', 'A', 'R', 'I', 'N', 'S',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'C', 'D',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'A', 'B',
-                'E', 'A', 'R', 'I', 'T', 'N', 'S', 'L', 'E', 'A', 'R', 'I', 'N', 'S',
-                'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'S',
-            ];
-            $fnum = abs( round($lng) );
-            $lnum = abs( round($lat) );
-            $list = str_split( hash( 'sha256', $payload ) );
-            foreach( $list as $character ){
-                if ( is_numeric( $character ) ) {
-                    $fnum = $fnum + $character;
-                    $lnum = $lnum + $character;
-                    break;
-                }
-            }
-            $initials = strtoupper( $letters[$fnum] . $letters[$lnum] );
+            $initials = Movement_Shortcode_Utilities::create_initials( $result['lng'], $result['lat'], $payload );
 
+            // location string
+            $location = Movement_Shortcode_Utilities::create_location_precision( $result['lng'], $result['lat'], $result['label'], $payload );
 
-            // build note and blessing type
-            $blessing_type = 'blessing';
-            switch( $result['category'] ) {
-                case 'leading':
-                    switch($result['action']){
-                        case 'starting_group':
-                            $note =  $initials . ' is starting a training group' . $in_language . '! ' . $location_label;
-                            $blessing_type = 'greatest_blessing';
-                            break;
-                        case 'building_group':
-                            $note =  $initials . ' is growing a training group' . $in_language . '! ' . $location_label;
-                            $blessing_type = 'greatest_blessing';
-                            break;
-                        case '1':
-                        case '2':
-                        case '3':
-                        case '4':
-                        case '5':
-                        case '6':
-                        case '7':
-                        case '8':
-                        case '9':
-                        case '10':
-                            if ( isset($payload['group_size']) && $payload['group_size'] > 1 ) {
-                                $note =  $initials . ' is leading a group of '. $payload['group_size'] .' through session ' . $result['action'] . $in_language . '! ' . $location_label;
-                            } else {
-                                $note =  $initials . ' is leading a group through session ' . $result['action'] . $in_language . '! ' . $location_label;
-                            }
-                            $blessing_type = 'greatest_blessing';
-                            break;
-                    } // leading actions
-                    break;
-                case 'joining':
-                    switch($result['action']){
-                        case 'coaching':
-                            $note =  $initials . ' is requesting coaching from Zúme coaches' . $in_language . '! ' . $location_label;
-                            $blessing_type = 'great_blessing';
-                            break;
-                        case 'zume_training':
-                            $note =  $initials . ' is registering for Zúme training' . $in_language . '! ' . $location_label;
-                            $blessing_type = 'great_blessing';
-                            break;
-                        case 'zume_vision':
-                            $note =  $initials . ' is joining the Zúme community to engage in Disciple Making Movements' . $in_language . '! ' . $location_label;
-                            $blessing_type = 'greatest_blessing';
-                            break;
-                    } // leading actions
-                    break;
-                case 'studying':
-                    switch($result['action']){
-                        case '1':
-                        case '2':
-                        case '3':
-                        case '4':
-                        case '5':
-                        case '6':
-                        case '7':
-                        case '8':
-                        case '9':
-                        case '10':
-                        case '11':
-                        case '12':
-                        case '13':
-                        case '14':
-                        case '15':
-                        case '16':
-                        case '17':
-                        case '18':
-                        case '19':
-                        case '20':
-                        case '21':
-                        case '22':
-                        case '23':
-                        case '24':
-                        case '25':
-                        case '26':
-                        case '27':
-                        case '28':
-                        case '29':
-                        case '30':
-                        case '31':
-                        case '32':
-                            $title = ' disciple making movement principles';
-                            if ( isset( $payload['title'] ) && ! empty( $payload['title'] ) ) {
-                                $title = ' "' . $payload['title'] . '"';
-                            }
-                            $note =  $initials . ' is studying' . $title . $in_language . '! ' . $location_label;
-                            $blessing_type = 'blessing';
-                            break;
-                        default:
-                            $string = '';
-                            if ( isset( $payload['note'] ) && ! empty( $payload['note'] ) ) {
-                                $string = esc_html( wp_unslash( $payload['note'] ) ) ;
-                            }
-                            $note =  $initials . ' ' . $string . $in_language . '! ' . $location_label;
-                            $blessing_type = 'blessing';
-                            break;
-                    }
-                    break;
-                case 'committing':
-                    switch($result['action']){
-                        case 'updated_3_month':
-                        default:
-                            $note =  $initials . '  made a three month plan to multiply disciples' . $in_language . '! ' . $location_label;
-                            $blessing_type = 'great_blessing';
-                            break;
-                    }
-                    break;
-                default:
-                    continue;
-            }
+            // note and type data
+            $data = Movement_Shortcode_Utilities::create_note_data( $result['category'], $result['action'], $initials, $in_language, $location['label'] );
 
-            $counts[$blessing_type]++;
+            $counts[$data['type']]++;
 
             $features[] = array(
                 'type' => 'Feature',
                 'properties' => array(
-                    "note" => esc_html( $note ),
-                    "type" => esc_attr( $blessing_type ),
+                    "note" => esc_html( $data['note'] ),
+                    "type" => esc_attr( $data['type'] ),
                     "time" => esc_attr( $time_string ),
                 ),
                 'geometry' => array(
                     'type' => 'Point',
                     'coordinates' => array(
-                        $lng,
-                        $lat,
+                        $location['lng'],
+                        $location['lat'],
                         1
                     ),
                 ),
