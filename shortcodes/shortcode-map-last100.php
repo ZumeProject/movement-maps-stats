@@ -738,10 +738,6 @@ class Movement_Maps_Stats_Last100hours
         return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 
-    public static function languages(){
-        return self::$languages = json_decode( file_get_contents(plugin_dir_path(__FILE__) . '/languages.json'), true );
-    }
-
     public static function query_contacts_points_geojson( $tz_name ) {
         global $wpdb;
 
