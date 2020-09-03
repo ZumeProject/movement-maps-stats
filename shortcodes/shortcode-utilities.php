@@ -175,7 +175,7 @@ class Movement_Shortcode_Utilities {
         ];
     }
 
-    public static function create_note_data( $category, $action, $initials, $in_language, $location_label ) : array {
+    public static function create_note_data( $category, $action, $initials, $in_language, $location_label, $payload ) : array {
         $data = [
             'note' => '',
             'type' => 'blessing',
@@ -338,7 +338,7 @@ class Movement_Shortcode_Utilities {
             $location = Movement_Shortcode_Utilities::create_location_precision( $result['lng'], $result['lat'], $result['label'], $payload );
 
             // note and type data
-            $data = Movement_Shortcode_Utilities::create_note_data( $result['category'], $result['action'], $initials, $in_language, $location['label'] );
+            $data = Movement_Shortcode_Utilities::create_note_data( $result['category'], $result['action'], $initials, $in_language, $location['label'], $payload );
 
             $counts[$data['type']]++;
 
