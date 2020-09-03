@@ -184,64 +184,70 @@ class Movement_Maps_Stats_Last100hours
 
                         <!-- Learn More Modal-->
                         <div class="center-caption"><a href="javascript:void(0)" onclick="open_great_blessing()">what's this?</a></div>
-                        <div class="large reveal" id="blessing-modal" data-reveal>
+                        <div class="large reveal" id="blessing-modal" data-reveal data-v-offset="10px">
                             <h2>Great, Greater, Greatest Blessings</h2>
                             <hr>
                             <div class="grid-x grid-padding-x">
                                 <div class="cell medium-6">
-                                    <p>Our map is filtered by what a concept we call <a href="https://zume.training/vision-casting-the-greatest-blessing/">the great, greater, and greatest blessings.</a></p>
+                                    <p>Our map is filtered by a concept we call <a href="https://zume.training/vision-casting-the-greatest-blessing/">the great, greater, and greatest blessings.</a></p>
                                     <p>It goes like this: <b>"It is a blessing to follow Jesus. It is a great blessing to lead others to follow Jesus. It is a greater blessing to start a new spiritual family. It is the greatest blessing to equip others to start new spiritual families."</b></p>
                                 </div>
                                 <div class="cell medium-6">
                                     <p id="video-holder"></p>
                                 </div>
                             </div>
-                            <hr>
-                            <table>
+                            <table class="unstriped">
                                 <thead>
                                 <tr>
-                                    <th>Category</th>
-                                    <th>Activity</th>
-                                    <th>Activity Examples</th>
+                                    <th style="width:250px;"></th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
+                                    <td>
+                                        <img src="<?php echo esc_url( plugin_dir_url(__DIR__) ) . '/images/blessing.jpg' ?>" style="height:200px;" alt="blessing" />
+                                    </td>
                                     <td><h4>Blessing</h4></td>
                                     <td>
-                                        (Knowing Jesus Better)
+                                        <strong>(i.e. Knowing Jesus Better)</strong><br>
+                                        being baptized, studying Jesus' Great Commission, committing to obey a word from the Spirit
                                     </td>
-                                    <td>Baptized, Studied Jesus' Great Commission</td>
                                 </tr>
                                 <tr>
+                                    <td>
+                                        <img src="<?php echo esc_url( plugin_dir_url(__DIR__) ) . '/images/great-blessing.jpg' ?>" style="height:200px;" alt="great-blessing" />
+                                    </td>
                                     <td><h4>Great Blessing</h4></td>
                                     <td>
-                                        (Helping Others Know Jesus)
-                                    </td>
-                                    <td>
-                                        Starting a training group, Joining training group
+                                        <strong>(i.e. Helping Others Know Jesus)</strong><br>
+                                        sharing Jesus, prayer walking, discipling someone to follow Jesus
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>
+                                        <img src="<?php echo esc_url( plugin_dir_url(__DIR__) ) . '/images/greater-blessing.jpg' ?>" style="height:200px;" alt="greater-blessing" />
+                                    </td>
                                     <td><h4>Greater Blessing</h4></td>
                                     <td>
-                                        (Starting Spiritual Families)
-                                    </td>
-                                    <td>
-                                        Started DBS, Started home church
+                                        <strong>(i.e. Starting Spiritual Families)</strong><br>
+                                        launching, building or leading: discovery bible studies, home churches, a DMM training groups
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><h4>Greatest Blessing</h4></td>
                                     <td>
-                                        (Helping Others Start Spiritual Families)
+                                        <img src="<?php echo esc_url( plugin_dir_url(__DIR__) ) . '/images/greatest-blessing.jpg' ?>" style="width:250px;" alt="greatest-blessing" />
                                     </td>
+                                    <td style="white-space: nowrap;"><h4>Greatest Blessing</h4></td>
                                     <td>
-                                        Leading a training, Joined local DMM effort, Reported group multiplication
+                                        <strong>(i.e. Helping Others Start Spiritual Families)</strong><br>
+                                        coaching someone to: lead DBS, home church, or training group; coaching someone in disciple multiplication; joining peers to labor for a multiplying movement
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
+                            <br><br><br>
                             <button class="close-button" data-close aria-label="Close modal" type="button">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -282,7 +288,7 @@ class Movement_Maps_Stats_Last100hours
 
                 <!-- Security disclaimer -->
                 <div class="caption">For identity protection, names and locations are obfuscated. <a href="javascript:void(0)" data-open="security">what's this</a></div>
-                <div id="security" class="large reveal" data-reveal>
+                <div id="security" class="large reveal" data-reveal >
                     <h2>Obfuscating Names and Locations</h2>
                     <hr>
                     <p>
@@ -297,9 +303,8 @@ class Movement_Maps_Stats_Last100hours
                         <div class="cell medium-6">
                             <h3>Alias Facts:</h3>
                             <ul>
-                                <li>These are not personally identifiable initials.</li>
+                                <li>These initials do not correspond to the actual first and last name of the person doing the action. No initials used are personally identifiable.</li>
                                 <li>An algorithm is used to consistently generate the same alias for the same person, but with letters that do not correspond to their actual name.</li>
-                                <li>These initials do not correspond to the actual first and last name of the person doing the action. </li>
                             </ul>
                         </div>
                         <div class="cell medium-6">
@@ -307,7 +312,7 @@ class Movement_Maps_Stats_Last100hours
                             <ul>
                                 <li>These are not personally identifiable locations.</li>
                                 <li>Accuracy of locations have be reduced to between 11 kilometers to 111 kilometers, depending on the security level of the country.</li>
-                                <li>Countries that are known hostile towards Christians are obfuscated most most. (Saudi Arabia, India, China, Pakistan, etc.)</li>
+                                <li>Countries that are known to be hostile towards Christians are obfuscated most. (<a href="https://www.opendoorsusa.org/christian-persecution/world-watch-list/">Top Countries</a>)</li>
                             </ul>
                         </div>
                     </div>
@@ -706,83 +711,7 @@ class Movement_Maps_Stats_Last100hours
             $tz_name = 'America/Denver';
         }
 
-        return self::query_contacts_points_geojson( $tz_name );
-    }
-
-    public static function query_contacts_points_geojson( $tz_name ) {
-        global $wpdb;
-
-        $utc_time = new DateTime('now', new DateTimeZone($tz_name));
-        $timezoneOffset = $utc_time->format('Z');
-
-        $timestamp = strtotime('-100 hours' );
-        $results = $wpdb->get_results( $wpdb->prepare( "
-                SELECT action, category, lng, lat, label, payload, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
-                ", $timestamp ), ARRAY_A );
-
-        /**
-         * (none) - #0E172F
-         * Blessing - blessing- #21336A
-         * Great Blessing - great_blessing - #2CACE2
-         * Greater Blessing - greater_blessing - #90C741
-         * Greatest Blessing - greatest_blessing - #FAEA38
-         */
-        $counts = [
-            'blessing' => 0,
-            'great_blessing' => 0,
-            'greater_blessing' => 0,
-            'greatest_blessing' => 0,
-        ];
-
-        $features = [];
-        foreach ( $results as $result ) {
-            $payload = maybe_unserialize( $result['payload'] );
-
-            // BUILD NOTE
-
-            // time string
-            $time_string = Movement_Shortcode_Utilities::create_time_string( $result['timestamp'], $timezoneOffset );
-
-            // language
-            $in_language = Movement_Shortcode_Utilities::create_in_language_string( $payload );
-
-            // initials string
-            $initials = Movement_Shortcode_Utilities::create_initials( $result['lng'], $result['lat'], $payload );
-
-            // location string
-            $location = Movement_Shortcode_Utilities::create_location_precision( $result['lng'], $result['lat'], $result['label'], $payload );
-
-            // note and type data
-            $data = Movement_Shortcode_Utilities::create_note_data( $result['category'], $result['action'], $initials, $in_language, $location['label'] );
-
-            $counts[$data['type']]++;
-
-            $features[] = array(
-                'type' => 'Feature',
-                'properties' => array(
-                    "note" => esc_html( $data['note'] ),
-                    "type" => esc_attr( $data['type'] ),
-                    "time" => esc_attr( $time_string ),
-                ),
-                'geometry' => array(
-                    'type' => 'Point',
-                    'coordinates' => array(
-                        $location['lng'],
-                        $location['lat'],
-                        1
-                    ),
-                ),
-            );
-
-        } // end foreach loop
-
-        $new_data = array(
-            'type' => 'FeatureCollection',
-            'counts' => $counts,
-            'features' => $features,
-        );
-
-        return $new_data;
+        return Movement_Shortcode_Utilities::query_contacts_points_geojson( $tz_name );
     }
 
     public function instructions_for_shortcode(){

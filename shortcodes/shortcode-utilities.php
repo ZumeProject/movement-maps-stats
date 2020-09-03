@@ -293,4 +293,80 @@ class Movement_Shortcode_Utilities {
 
         return $data;
     }
+
+    public static function query_contacts_points_geojson( $tz_name ) {
+        global $wpdb;
+
+        $utc_time = new DateTime('now', new DateTimeZone($tz_name));
+        $timezoneOffset = $utc_time->format('Z');
+
+        $timestamp = strtotime('-100 hours' );
+        $results = $wpdb->get_results( $wpdb->prepare( "
+                SELECT action, category, lng, lat, label, payload, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
+                ", $timestamp ), ARRAY_A );
+
+        /**
+         * (none) - #0E172F
+         * Blessing - blessing- #21336A
+         * Great Blessing - great_blessing - #2CACE2
+         * Greater Blessing - greater_blessing - #90C741
+         * Greatest Blessing - greatest_blessing - #FAEA38
+         */
+        $counts = [
+            'blessing' => 0,
+            'great_blessing' => 0,
+            'greater_blessing' => 0,
+            'greatest_blessing' => 0,
+        ];
+
+        $features = [];
+        foreach ( $results as $result ) {
+            $payload = maybe_unserialize( $result['payload'] );
+
+            // BUILD NOTE
+
+            // time string
+            $time_string = Movement_Shortcode_Utilities::create_time_string( $result['timestamp'], $timezoneOffset );
+
+            // language
+            $in_language = Movement_Shortcode_Utilities::create_in_language_string( $payload );
+
+            // initials string
+            $initials = Movement_Shortcode_Utilities::create_initials( $result['lng'], $result['lat'], $payload );
+
+            // location string
+            $location = Movement_Shortcode_Utilities::create_location_precision( $result['lng'], $result['lat'], $result['label'], $payload );
+
+            // note and type data
+            $data = Movement_Shortcode_Utilities::create_note_data( $result['category'], $result['action'], $initials, $in_language, $location['label'] );
+
+            $counts[$data['type']]++;
+
+            $features[] = array(
+                'type' => 'Feature',
+                'properties' => array(
+                    "note" => esc_html( $data['note'] ),
+                    "type" => esc_attr( $data['type'] ),
+                    "time" => esc_attr( $time_string ),
+                ),
+                'geometry' => array(
+                    'type' => 'Point',
+                    'coordinates' => array(
+                        $location['lng'],
+                        $location['lat'],
+                        1
+                    ),
+                ),
+            );
+
+        } // end foreach loop
+
+        $new_data = array(
+            'type' => 'FeatureCollection',
+            'counts' => $counts,
+            'features' => $features,
+        );
+
+        return $new_data;
+    }
 }
