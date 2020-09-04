@@ -186,11 +186,11 @@ class Movement_Shortcode_Utilities {
                 switch($action){
                     case 'starting_group':
                         $data['note'] =  $initials . ' is starting a training group' . $in_language . '! ' . $location_label;
-                        $data['type'] = 'greatest_blessing';
+                        $data['type'] = 'greater_blessing';
                         break;
                     case 'building_group':
                         $data['note'] =  $initials . ' is growing a training group' . $in_language . '! ' . $location_label;
-                        $data['type'] = 'greatest_blessing';
+                        $data['type'] = 'greater_blessing';
                         break;
                     case '1':
                     case '2':
@@ -294,7 +294,7 @@ class Movement_Shortcode_Utilities {
         return $data;
     }
 
-    public static function query_contacts_points_geojson( $tz_name ) {
+    public static function query_contacts_points_geojson( $tz_name, $country = 'none', $language = 'none' ) {
         global $wpdb;
 
         $utc_time = new DateTime('now', new DateTimeZone($tz_name));
@@ -304,6 +304,7 @@ class Movement_Shortcode_Utilities {
         $results = $wpdb->get_results( $wpdb->prepare( "
                 SELECT action, category, lng, lat, label, payload, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
                 ", $timestamp ), ARRAY_A );
+
 
         /**
          * (none) - #0E172F
@@ -318,10 +319,28 @@ class Movement_Shortcode_Utilities {
             'greater_blessing' => 0,
             'greatest_blessing' => 0,
         ];
+        $countries = [];
+        $languages = [];
 
         $features = [];
         foreach ( $results as $result ) {
+
             $payload = maybe_unserialize( $result['payload'] );
+
+            // make country list from results
+            if ( isset( $payload['country'] ) && ! empty( $payload['country'] ) ) {
+                $countries[$payload['country']] = $payload['country'];
+            }
+
+            // make language list
+            if ( isset( $payload['language_name'] )
+                && ! empty( $payload['language_name'] )
+                && isset( $payload['language_code'] )
+                && ! empty( $payload['language_code'] )
+            ) {
+                $languages[$payload['language_code']] = $payload['language_name'];
+            }
+
 
             // BUILD NOTE
 
@@ -342,12 +361,24 @@ class Movement_Shortcode_Utilities {
 
             $counts[$data['type']]++;
 
+            // filter out non selected country
+            if ( 'none' !== $country && $country !== $payload['country'] ?? '' ) {
+                continue;
+            }
+
+            // filter out non selected language
+            if ( 'none' !== $language && $language !== $payload['language_code'] ?? '' ) {
+                continue;
+            }
+
             $features[] = array(
                 'type' => 'Feature',
                 'properties' => array(
                     "note" => esc_html( $data['note'] ),
                     "type" => esc_attr( $data['type'] ),
                     "time" => esc_attr( $time_string ),
+                    "language" => esc_attr( $payload['language_code'] ?? '' ),
+                    "country" => esc_attr( $payload['country'] ?? '' )
                 ),
                 'geometry' => array(
                     'type' => 'Point',
@@ -361,12 +392,19 @@ class Movement_Shortcode_Utilities {
 
         } // end foreach loop
 
+        ksort( $countries );
+        ksort($languages);
+
         $new_data = array(
             'type' => 'FeatureCollection',
             'counts' => $counts,
+            'countries' => $countries,
+            'languages' => $languages,
             'features' => $features,
         );
 
         return $new_data;
     }
+
+
 }
