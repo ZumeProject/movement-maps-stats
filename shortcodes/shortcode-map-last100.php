@@ -459,7 +459,7 @@ class Movement_Maps_Stats_Last100hours
                                 });
                                 if ( window.geojson_bounds !== bounds ){
                                     map.fitBounds(bounds);
-                                    
+
                                 }
                             })
                         set_timer()

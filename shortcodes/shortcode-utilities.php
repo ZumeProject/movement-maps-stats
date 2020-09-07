@@ -359,8 +359,6 @@ class Movement_Shortcode_Utilities {
             // note and type data
             $data = Movement_Shortcode_Utilities::create_note_data( $result['category'], $result['action'], $initials, $in_language, $location['label'], $payload );
 
-            $counts[$data['type']]++;
-
             // filter out non selected country
             if ( 'none' !== $country && $country !== $payload['country'] ?? '' ) {
                 continue;
@@ -370,6 +368,8 @@ class Movement_Shortcode_Utilities {
             if ( 'none' !== $language && $language !== $payload['language_code'] ?? '' ) {
                 continue;
             }
+
+            $counts[$data['type']]++;
 
             $features[] = array(
                 'type' => 'Feature',
