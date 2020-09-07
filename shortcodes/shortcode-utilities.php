@@ -404,6 +404,9 @@ class Movement_Shortcode_Utilities {
             'features' => $features,
         );
 
+        $hash = hash('sha256', serialize( $new_data ) );
+        $new_data['hash'] = $hash;
+
         return $new_data;
     }
 

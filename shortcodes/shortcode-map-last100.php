@@ -435,6 +435,10 @@ class Movement_Maps_Stats_Last100hours
                         }
                         makeRequest('POST', obj.settings.points_rest_url, { timezone_offset: tz, country: window.selected_country, language: window.selected_language }, obj.settings.points_rest_base_url )
                             .then(points => {
+                                if ( window.geojson_hash === points.hash ){
+                                    return;
+                                }
+                                window.geojson_hash = points.hash
 
                                 load_countries_dropdown( points )
                                 load_languages_dropdown( points )
@@ -447,12 +451,16 @@ class Movement_Maps_Stats_Last100hours
                                     map.getSource('pointsSource').setData(points);
                                     jQuery('#map-loader').hide()
                                 }
+
                                 // fly to boundaries
                                 var bounds = new mapboxgl.LngLatBounds();
                                 points.features.forEach(function(feature) {
                                     bounds.extend(feature.geometry.coordinates);
                                 });
-                                map.fitBounds(bounds);
+                                if ( window.geojson_bounds !== bounds ){
+                                    map.fitBounds(bounds);
+                                    
+                                }
                             })
                         set_timer()
                     }
