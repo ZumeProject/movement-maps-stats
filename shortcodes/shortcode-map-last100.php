@@ -435,11 +435,24 @@ class Movement_Maps_Stats_Last100hours
                         }
                         makeRequest('POST', obj.settings.points_rest_url, { timezone_offset: tz, country: window.selected_country, language: window.selected_language }, obj.settings.points_rest_base_url )
                             .then(points => {
+
                                 load_countries_dropdown( points )
                                 load_languages_dropdown( points )
-                                load_layer( points )
                                 load_list( points )
 
+                                var mapSource= map.getSource('pointsSource');
+                                if(typeof mapSource === 'undefined') {
+                                    load_layer( points )
+                                } else {
+                                    map.getSource('pointsSource').setData(points);
+                                    jQuery('#map-loader').hide()
+                                }
+                                // fly to boundaries
+                                var bounds = new mapboxgl.LngLatBounds();
+                                points.features.forEach(function(feature) {
+                                    bounds.extend(feature.geometry.coordinates);
+                                });
+                                map.fitBounds(bounds);
                             })
                         set_timer()
                     }
@@ -739,14 +752,22 @@ class Movement_Maps_Stats_Last100hours
                         }
                     })
                     country_dropdown.on('change', function(){
+                        clear_timer()
+                        window.selected_country = country_dropdown.val()
+                        window.selected_language = language_dropdown.val()
                         jQuery('#map-loader').show()
                         jQuery('#list-loader').show()
-                        get_points()
+                        let tz = tz_select.val()
+                        get_points( tz )
                     })
                     language_dropdown.on('change', function(){
+                        clear_timer()
+                        window.selected_country = country_dropdown.val()
+                        window.selected_language = language_dropdown.val()
                         jQuery('#map-loader').show()
                         jQuery('#list-loader').show()
-                        get_points()
+                        let tz = tz_select.val()
+                        get_points( tz )
                     })
 
                 }

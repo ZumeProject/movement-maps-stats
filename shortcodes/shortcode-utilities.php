@@ -395,6 +395,7 @@ class Movement_Shortcode_Utilities {
         ksort( $countries );
         ksort($languages);
 
+
         $new_data = array(
             'type' => 'FeatureCollection',
             'counts' => $counts,
