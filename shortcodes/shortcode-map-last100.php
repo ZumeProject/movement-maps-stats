@@ -288,17 +288,19 @@ class Movement_Maps_Stats_Last100hours
                                 <option value="none">Filter by Country</option>
                             </select>
                         </p>
-                        <p>
+                        <div>
                             <select name="language" id="language-dropdown">
                                 <option value="none">Filter by Language</option>
                             </select>
-                        </p>
+                        </div>
+                        <div class="center-caption" style="text-align:center;"><a href="javascript:void(0);" onclick="location.reload();">reset filters</a></div>
+
                     </div>
                 </div>
                 <hr>
 
                 <!-- Security disclaimer -->
-                <div class="caption">For identity protection, names and locations are obfuscated. <a href="javascript:void(0)" data-open="security">what's this</a></div>
+                <div class="caption">For identity protection, names and locations are obfuscated. <a href="javascript:void(0);" data-open="security">what's this</a></div>
                 <div id="security" class="large reveal" data-reveal >
                     <h2>Obfuscating Names and Locations</h2>
                     <hr>
@@ -673,6 +675,8 @@ class Movement_Maps_Stats_Last100hours
 
                     }
 
+
+
                     function load_countries_dropdown( points ) {
                         window.selected_country = country_dropdown.val()
                         country_dropdown.empty()
@@ -777,6 +781,8 @@ class Movement_Maps_Stats_Last100hours
                         let tz = tz_select.val()
                         get_points( tz )
                     })
+
+
 
                 }
                 write_all_points()
