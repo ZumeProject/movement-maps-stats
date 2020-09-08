@@ -437,15 +437,19 @@ class Movement_Maps_Stats_Last100hours
                         }
                         makeRequest('POST', obj.settings.points_rest_url, { timezone_offset: tz, country: window.selected_country, language: window.selected_language }, obj.settings.points_rest_base_url )
                             .then(points => {
+
+                                // load drop downs and list
+                                load_countries_dropdown( points )
+                                load_languages_dropdown( points )
+                                load_list( points )
+
+                                // check if map needs updating.
                                 if ( window.geojson_hash === points.hash ){
                                     return;
                                 }
                                 window.geojson_hash = points.hash
 
-                                load_countries_dropdown( points )
-                                load_languages_dropdown( points )
-                                load_list( points )
-
+                                // load map data
                                 var mapSource= map.getSource('pointsSource');
                                 if(typeof mapSource === 'undefined') {
                                     load_layer( points )
