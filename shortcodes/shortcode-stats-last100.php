@@ -3,10 +3,10 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 } // Exit if accessed directly.
 
-class Movement_Maps_Stats_Last100hours
+class Movement_Shortcode_Stats_Last100hours
 {
     public $namespace = 'movement_maps_stats/v1/';
-    public $token = 'last100hours';
+    public $token = 'last100hours_stats';
     public $ip_response;
     public static $languages;
 
@@ -53,7 +53,7 @@ class Movement_Maps_Stats_Last100hours
         wp_enqueue_style( 'mapbox-gl-css');
 
         // set timezone info
-         // Expects to be installed in a theme like Zume.Vision that has a full copy of the dt-mapping folder from Disciple Tools.
+        // Expects to be installed in a theme like Zume.Vision that has a full copy of the dt-mapping folder from Disciple Tools.
         $ipstack = new DT_Ipstack_API();
         $ip_address = $ipstack::get_real_ip_address();
         $this->ip_response = $ipstack::geocode_ip_address($ip_address);
@@ -282,12 +282,25 @@ class Movement_Maps_Stats_Last100hours
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+                        <hr>
+                        <p>
+                            <select name="country" id="country-dropdown">
+                                <option value="none">Filter by Country</option>
+                            </select>
+                        </p>
+                        <div>
+                            <select name="language" id="language-dropdown">
+                                <option value="none">Filter by Language</option>
+                            </select>
+                        </div>
+                        <div class="center-caption" style="text-align:center;"><a href="javascript:void(0);" onclick="location.reload();">reset filters</a></div>
+
                     </div>
                 </div>
                 <hr>
 
                 <!-- Security disclaimer -->
-                <div class="caption">For identity protection, names and locations are obfuscated. <a href="javascript:void(0)" data-open="security">what's this</a></div>
+                <div class="caption">For identity protection, names and locations are obfuscated. <a href="javascript:void(0);" data-open="security">what's this</a></div>
                 <div id="security" class="large reveal" data-reveal >
                     <h2>Obfuscating Names and Locations</h2>
                     <hr>
@@ -338,6 +351,8 @@ class Movement_Maps_Stats_Last100hours
                     let great_blessing_button = jQuery('#great-blessing-button')
                     let greater_blessing_button = jQuery('#greater-blessing-button')
                     let greatest_blessing_button = jQuery('#greatest-blessing-button')
+                    let country_dropdown = jQuery('#country-dropdown')
+                    let language_dropdown = jQuery('#language-dropdown')
 
                     window.blessing = 'visible'
                     window.great_blessing = 'visible'
@@ -379,10 +394,10 @@ class Movement_Maps_Stats_Last100hours
                     var map = new mapboxgl.Map({
                         container: 'map',
                         style: 'mapbox://styles/mapbox/light-v10',
-                        center: [-30, 20],
+                        center: [10, 30],
                         minZoom: 1,
                         maxZoom: 8,
-                        zoom: 1
+                        zoom: 3
                     });
 
                     // disable map rotation using right click + drag
@@ -391,9 +406,9 @@ class Movement_Maps_Stats_Last100hours
 
                     // load sources
                     map.on('load', function () {
-                        let spinner = jQuery('#spinner')
-                        spinner.show()
-                        get_points( )
+                        window.selected_language = 'none'
+                        window.selected_country = 'none'
+                        get_points()
                     })
                     map.on('zoomstart', function(){
                         clear_timer()
@@ -420,10 +435,38 @@ class Movement_Maps_Stats_Last100hours
                         if ( ! tz ) {
                             tz = tz_select.val()
                         }
-                        makeRequest('POST', obj.settings.points_rest_url, { timezone_offset: tz }, obj.settings.points_rest_base_url )
+                        makeRequest('POST', obj.settings.points_rest_url, { timezone_offset: tz, country: window.selected_country, language: window.selected_language }, obj.settings.points_rest_base_url )
                             .then(points => {
-                                load_layer( points )
+
+                                // load drop downs and list
+                                load_countries_dropdown( points )
+                                load_languages_dropdown( points )
                                 load_list( points )
+
+                                // check if map needs updating.
+                                if ( window.geojson_hash === points.hash ){
+                                    return;
+                                }
+                                window.geojson_hash = points.hash
+
+                                // load map data
+                                var mapSource= map.getSource('pointsSource');
+                                if(typeof mapSource === 'undefined') {
+                                    load_layer( points )
+                                } else {
+                                    map.getSource('pointsSource').setData(points);
+                                }
+                                jQuery('#map-loader').hide()
+
+                                // fly to boundaries
+                                var bounds = new mapboxgl.LngLatBounds();
+                                points.features.forEach(function(feature) {
+                                    bounds.extend(feature.geometry.coordinates);
+                                });
+                                if ( window.geojson_bounds !== bounds ){
+                                    map.fitBounds(bounds);
+
+                                }
                             })
                         set_timer()
                     }
@@ -509,8 +552,8 @@ class Movement_Maps_Stats_Last100hours
                                         [4, 12],
                                         [5, 16],
                                         [6, 20],
-                                        [7, 24],
-                                        [8, 28],
+                                        [7, 22],
+                                        [8, 22],
                                     ]
                                 },
                                 'circle-color': '#FAEA38'
@@ -531,8 +574,8 @@ class Movement_Maps_Stats_Last100hours
                                         [4, 14],
                                         [5, 18],
                                         [6, 22],
-                                        [7, 26],
-                                        [8, 30],
+                                        [7, 22],
+                                        [8, 22],
                                     ]
                                 },
                                 'circle-color': '#90C741'
@@ -616,9 +659,15 @@ class Movement_Maps_Stats_Last100hours
                             if ( 'greatest_blessing' === v.properties.type && filter_greatest_blessing ) {
                                 visible = 'none'
                             }
+                            if ( window.selected_country !== 'none' && window.selected_country !== v.properties.country ) {
+                                visible = 'none'
+                            }
+                            if ( window.selected_language !== 'none' && window.selected_language !== v.properties.language ) {
+                                visible = 'none'
+                            }
 
                             if ( v.properties.note ) {
-                                list_container.append(`<li class="${v.properties.type}-activity" style="display:${visible}"><strong>${v.properties.time}</strong> - ${v.properties.note}</li>`)
+                                list_container.append(`<li class="${v.properties.type}-activity ${v.properties.country}-item ${v.properties.language}-item" style="display:${visible}"><strong>${v.properties.time}</strong> - ${v.properties.note}</li>`)
                             }
                         })
                         jQuery('#list-loader').hide()
@@ -628,6 +677,41 @@ class Movement_Maps_Stats_Last100hours
                         jQuery('.greater-blessing-count').empty().append(points.counts.greater_blessing)
                         jQuery('.greatest-blessing-count').empty().append(points.counts.greatest_blessing)
 
+                    }
+
+
+
+                    function load_countries_dropdown( points ) {
+                        window.selected_country = country_dropdown.val()
+                        country_dropdown.empty()
+
+                        let add_selected = ''
+                        country_dropdown.append(`<option value="none">Filter by Country</option>`)
+                        country_dropdown.append(`<option value="none">Clear</option>`)
+                        country_dropdown.append(`<option disabled>---</option>`)
+                        jQuery.each(points.countries, function(i,v){
+                            add_selected = ''
+                            if ( v === window.selected_country ) {
+                                add_selected = ' selected'
+                            }
+                            country_dropdown.append(`<option value="${i}" ${add_selected}>${v}</option>`)
+                        })
+                    }
+                    function load_languages_dropdown( points ) {
+                        window.selected_language = language_dropdown.val()
+                        language_dropdown.empty()
+
+                        let add_selected = ''
+                        language_dropdown.append(`<option value="none">Filter by Language</option>`)
+                        language_dropdown.append(`<option value="none">Clear</option>`)
+                        language_dropdown.append(`<option disabled>---</option>`)
+                        jQuery.each(points.languages, function(i,v){
+                            add_selected = ''
+                            if ( i === window.selected_language ) {
+                                add_selected = ' selected'
+                            }
+                            language_dropdown.append(`<option value="${i}" ${add_selected}>${v}</option>`)
+                        })
                     }
 
                     // Filter button controls
@@ -683,6 +767,27 @@ class Movement_Maps_Stats_Last100hours
                             map.setLayoutProperty('greatestBlessing', 'visibility', 'none');
                         }
                     })
+                    country_dropdown.on('change', function(){
+                        clear_timer()
+                        window.selected_country = country_dropdown.val()
+                        window.selected_language = language_dropdown.val()
+                        jQuery('#map-loader').show()
+                        jQuery('#list-loader').show()
+                        let tz = tz_select.val()
+                        get_points( tz )
+                    })
+                    language_dropdown.on('change', function(){
+                        clear_timer()
+                        window.selected_country = country_dropdown.val()
+                        window.selected_language = language_dropdown.val()
+                        jQuery('#map-loader').show()
+                        jQuery('#list-loader').show()
+                        let tz = tz_select.val()
+                        get_points( tz )
+                    })
+
+
+
                 }
                 write_all_points()
             })
@@ -710,8 +815,16 @@ class Movement_Maps_Stats_Last100hours
         } else {
             $tz_name = 'America/Denver';
         }
+        $country = 'none';
+        if ( isset( $params['country'] ) && ! empty( $params['country'] )) {
+            $country = sanitize_text_field( wp_unslash( $params['country'] ) );
+        }
+        $language = 'none';
+        if ( isset( $params['language'] ) && ! empty( $params['language'] )) {
+            $language = sanitize_text_field( wp_unslash( $params['language'] ) );
+        }
 
-        return self::query_contacts_points_geojson( $tz_name );
+        return Movement_Shortcode_Utilities::query_contacts_points_geojson( $tz_name, $country, $language );
     }
 
     public function instructions_for_shortcode(){
@@ -724,81 +837,5 @@ class Movement_Maps_Stats_Last100hours
         <?php
     }
 
-    public static function query_contacts_points_geojson( $tz_name ) {
-        global $wpdb;
-
-        $utc_time = new DateTime('now', new DateTimeZone($tz_name));
-        $timezoneOffset = $utc_time->format('Z');
-
-        $timestamp = strtotime('-100 hours' );
-        $results = $wpdb->get_results( $wpdb->prepare( "
-                SELECT action, category, lng, lat, label, payload, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
-                ", $timestamp ), ARRAY_A );
-
-        /**
-         * (none) - #0E172F
-         * Blessing - blessing- #21336A
-         * Great Blessing - great_blessing - #2CACE2
-         * Greater Blessing - greater_blessing - #90C741
-         * Greatest Blessing - greatest_blessing - #FAEA38
-         */
-        $counts = [
-            'blessing' => 0,
-            'great_blessing' => 0,
-            'greater_blessing' => 0,
-            'greatest_blessing' => 0,
-        ];
-
-        $features = [];
-        foreach ( $results as $result ) {
-            $payload = maybe_unserialize( $result['payload'] );
-
-            // BUILD NOTE
-
-            // time string
-            $time_string = Movement_Shortcode_Utilities::create_time_string( $result['timestamp'], $timezoneOffset );
-
-            // language
-            $in_language = Movement_Shortcode_Utilities::create_in_language_string( $payload );
-
-            // initials string
-            $initials = Movement_Shortcode_Utilities::create_initials( $result['lng'], $result['lat'], $payload );
-
-            // location string
-            $location = Movement_Shortcode_Utilities::create_location_precision( $result['lng'], $result['lat'], $result['label'], $payload );
-
-            // note and type data
-            $data = Movement_Shortcode_Utilities::create_note_data( $result['category'], $result['action'], $initials, $in_language, $location['label'], $payload );
-
-            $counts[$data['type']]++;
-
-            $features[] = array(
-                'type' => 'Feature',
-                'properties' => array(
-                    "note" => esc_html( $data['note'] ),
-                    "type" => esc_attr( $data['type'] ),
-                    "time" => esc_attr( $time_string ),
-                ),
-                'geometry' => array(
-                    'type' => 'Point',
-                    'coordinates' => array(
-                        $location['lng'],
-                        $location['lat'],
-                        1
-                    ),
-                ),
-            );
-
-        } // end foreach loop
-
-        $new_data = array(
-            'type' => 'FeatureCollection',
-            'counts' => $counts,
-            'features' => $features,
-        );
-
-        return $new_data;
-    }
-
 }
-Movement_Maps_Stats_Last100hours::instance();
+Movement_Shortcode_Stats_Last100hours::instance();

@@ -3,10 +3,10 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 } // Exit if accessed directly.
 
-class Movement_Maps_Stats_Last100hours
+class Movement_Shortcode_Map_Last100hours
 {
     public $namespace = 'movement_maps_stats/v1/';
-    public $token = 'last100hours';
+    public $token = 'last100hours_map';
     public $ip_response;
     public static $languages;
 
@@ -838,4 +838,4 @@ class Movement_Maps_Stats_Last100hours
     }
 
 }
-Movement_Maps_Stats_Last100hours::instance();
+Movement_Shortcode_Map_Last100hours::instance();
