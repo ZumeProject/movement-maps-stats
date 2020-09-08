@@ -455,8 +455,8 @@ class Movement_Maps_Stats_Last100hours
                                     load_layer( points )
                                 } else {
                                     map.getSource('pointsSource').setData(points);
-                                    jQuery('#map-loader').hide()
                                 }
+                                jQuery('#map-loader').hide()
 
                                 // fly to boundaries
                                 var bounds = new mapboxgl.LngLatBounds();
