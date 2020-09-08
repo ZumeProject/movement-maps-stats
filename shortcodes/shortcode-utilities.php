@@ -305,6 +305,7 @@ class Movement_Shortcode_Utilities {
                 SELECT action, category, lng, lat, label, payload, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
                 ", $timestamp ), ARRAY_A );
 
+        $hash = hash('sha256', serialize( $results ) );
 
         /**
          * (none) - #0E172F
@@ -394,18 +395,15 @@ class Movement_Shortcode_Utilities {
 
         ksort( $countries );
         ksort($languages);
-
-
+        
         $new_data = array(
             'type' => 'FeatureCollection',
             'counts' => $counts,
             'countries' => $countries,
             'languages' => $languages,
+            'hash' => $hash,
             'features' => $features,
         );
-
-        $hash = hash('sha256', serialize( $new_data ) );
-        $new_data['hash'] = $hash;
 
         return $new_data;
     }
