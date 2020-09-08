@@ -341,7 +341,6 @@ class Movement_Shortcode_Utilities {
                 $languages[$payload['language_code']] = $payload['language_name'];
             }
 
-
             // BUILD NOTE
 
             // time string
@@ -408,6 +407,7 @@ class Movement_Shortcode_Utilities {
 
         return $new_data;
     }
+
 
 
 }
