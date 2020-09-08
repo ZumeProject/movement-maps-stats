@@ -305,8 +305,6 @@ class Movement_Shortcode_Utilities {
                 SELECT action, category, lng, lat, label, payload, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
                 ", $timestamp ), ARRAY_A );
 
-        $hash = hash('sha256', serialize( $results ) );
-
         /**
          * (none) - #0E172F
          * Blessing - blessing- #21336A
@@ -322,6 +320,7 @@ class Movement_Shortcode_Utilities {
         ];
         $countries = [];
         $languages = [];
+        $hash = [];
 
         $features = [];
         foreach ( $results as $result ) {
@@ -370,6 +369,8 @@ class Movement_Shortcode_Utilities {
                 continue;
             }
 
+            $hash[] = $data;
+
             $counts[$data['type']]++;
 
             $features[] = array(
@@ -401,7 +402,7 @@ class Movement_Shortcode_Utilities {
             'counts' => $counts,
             'countries' => $countries,
             'languages' => $languages,
-            'hash' => $hash,
+            'hash' => hash('sha256', serialize( $hash ) ),
             'features' => $features,
         );
 
