@@ -394,10 +394,10 @@ class Movement_Maps_Stats_Last100hours
                     var map = new mapboxgl.Map({
                         container: 'map',
                         style: 'mapbox://styles/mapbox/light-v10',
-                        center: [-30, 20],
+                        center: [10, 30],
                         minZoom: 1,
                         maxZoom: 8,
-                        zoom: 1
+                        zoom: 3
                     });
 
                     // disable map rotation using right click + drag
@@ -552,8 +552,8 @@ class Movement_Maps_Stats_Last100hours
                                         [4, 12],
                                         [5, 16],
                                         [6, 20],
-                                        [7, 24],
-                                        [8, 28],
+                                        [7, 22],
+                                        [8, 22],
                                     ]
                                 },
                                 'circle-color': '#FAEA38'
@@ -574,8 +574,8 @@ class Movement_Maps_Stats_Last100hours
                                         [4, 14],
                                         [5, 18],
                                         [6, 22],
-                                        [7, 26],
-                                        [8, 30],
+                                        [7, 22],
+                                        [8, 22],
                                     ]
                                 },
                                 'circle-color': '#90C741'
