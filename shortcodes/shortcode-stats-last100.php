@@ -90,19 +90,27 @@ class Movement_Shortcode_Stats_Last100hours
                 <div class="grid-x center grid-padding-x">
                     <div class="cell small-1"></div>
                     <div class="cell medium-2">
-                        <h3>Active People</h3>
+                        <h3>Recent Activity</h3>
                         <hr>
-                        <p>Blessing<br><span class="progress-counter" id="activity_blessing"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
-                        <p>Great Blessing<br><span class="progress-counter" id="activity_great_blessing"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
-                        <p>Greater Blessing<br><span class="progress-counter" id="activity_greater_blessing"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
-                        <p>Greatest Blessing<br><span class="progress-counter" id="activity_greatest_blessing"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
+                        <p>Blessings<br><span class="progress-counter" id="blessing"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
+                        <p>Great Blessings<br><span class="progress-counter" id="great_blessing"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
+                        <p>Greater Blessings<br><span class="progress-counter" id="greater_blessing"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
+                        <p>Greatest Blessings<br><span class="progress-counter" id="greatest_blessing"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
                     </div>
                     <div class="cell medium-2">
-                        <h3>Active Locations</h3>
+                        <h3>Recent Locations</h3>
                         <hr>
-                        <p>Countries<br><span class="progress-counter" id="total_countries"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><span class="progress-counter">/</span><span class="progress-counter" id="active_countries"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
-                        <p>States<br><span class="progress-counter" id="total_states"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><span class="progress-counter">/</span><span class="progress-counter" id="active_states"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
-                        <p>Counties/Districts<br><span class="progress-counter" id="total_counties"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><span class="progress-counter">/</span><span class="progress-counter" id="active_counties"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
+                        <p>Countries<br>
+                            <span class="progress-counter" id="active_countries"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span> <span class="progress-counter">/</span>
+                            <span class="progress-counter" id="total_countries"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /><br></p>
+                        <p>
+                            States<br>
+                            <span class="progress-counter" id="active_states"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span> <span class="progress-counter">/</span>
+                            <span class="progress-counter" id="total_states"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
+                        <p>
+                            Counties/Districts<br>
+                            <span class="progress-counter" id="active_counties"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span> <span class="progress-counter">/</span>
+                            <span class="progress-counter" id="total_counties"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
                     </div>
                     <div class="cell medium-2">
                         <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) )?>images/hero_with_clock.svg" alt="welcome-graphic" />
@@ -206,19 +214,6 @@ class Movement_Shortcode_Stats_Last100hours
 
 
                 /* LAST 100 HOURS SECTION*/
-
-
-                window.refresh_timer = ''
-                function set_timer() {
-                    clear_timer()
-                    window.refresh_timer = setTimeout(function(){
-                        write_last_100( )
-                    }, 10000);
-                }
-                function clear_timer() {
-                    clearTimeout(window.refresh_timer)
-                }
-
                 let top_10_locations = $('#top_10_locations')
                 let top_10_languages = $('#top_10_languages')
                 let active_countries = $('#active_countries')
@@ -227,10 +222,10 @@ class Movement_Shortcode_Stats_Last100hours
                 let total_states = $('#total_states')
                 let active_counties = $('#active_counties')
                 let total_counties = $('#total_counties')
-                let activity_blessing = $('#activity_blessing')
-                let activity_great_blessing = $('#activity_great_blessing')
-                let activity_greater_blessing = $('#activity_greater_blessing')
-                let activity_greatest_blessing = $('#activity_greatest_blessing')
+                let blessing = $('#blessing')
+                let great_blessing = $('#great_blessing')
+                let greater_blessing = $('#greater_blessing')
+                let greatest_blessing = $('#greatest_blessing')
 
                 function write_last_100(){
                     let obj = window.shortcode_metrics
@@ -257,15 +252,13 @@ class Movement_Shortcode_Stats_Last100hours
                             total_states.html(`${data.total_states}`)
                             total_counties.html(`${data.total_counties}`)
 
-                            activity_blessing.html(`${data.activity_blessing}`)
-                            activity_great_blessing.html(`${data.activity_great_blessing}`)
-                            activity_greater_blessing.html(`${data.activity_greater_blessing}`)
-                            activity_greatest_blessing.html(`${data.activity_greatest_blessing}`)
+                            blessing.html(`${data.blessing}`)
+                            great_blessing.html(`${data.great_blessing}`)
+                            greater_blessing.html(`${data.greater_blessing}`)
+                            greatest_blessing.html(`${data.greatest_blessing}`)
 
                         })
-                    set_timer()
                 }
-
                 write_last_100()
             })
         </script>
@@ -368,36 +361,96 @@ class Movement_Shortcode_Stats_Last100hours
     }
 
     public function last100() : array {
-
-
-
-        //@todo add live database data
-
-
-
-
-        return [
-            'activity_blessing' => 100,
-            'activity_great_blessing' => 200,
-            'activity_greater_blessing' => 500,
-            'activity_greatest_blessing' => 1000,
-            'total_countries' => 256,
-            'active_countries' => 130,
-            'total_states' => 4000,
-            'active_states' => 3000,
-            'total_counties' => 50000,
-            'active_counties' => 30000,
-            'top_10_locations' => [
-                'United States',
-                'Pakistan',
-                'Turkey'
-            ],
-            'top_10_languages' => [
-                'English',
-                'Arabic',
-                'Mandarin'
-            ]
+        global $wpdb;
+        $data = [
+            'blessing' => 0,
+            'great_blessing' => 0,
+            'greater_blessing' => 0,
+            'greatest_blessing' => 0,
+            'total_countries' => '256',
+            'active_countries' => 0,
+            'total_states' => '3,612',
+            'active_states' => 0,
+            'total_counties' => '45,960',
+            'active_counties' => 0,
+            'top_10_locations' => [],
+            'top_10_languages' => []
         ];
+
+
+        $timestamp = strtotime('-100 hours' );
+        $move_log = $wpdb->get_results( $wpdb->prepare( "
+                SELECT count( DISTINCT(g.admin0_grid_id) ) as countries, count( DISTINCT(g.admin1_grid_id) ) as states, count( DISTINCT(g.admin2_grid_id) ) as counties
+                FROM $wpdb->dt_movement_log  as ml
+                JOIN $wpdb->dt_location_grid as g ON g.grid_id=ml.grid_id
+                WHERE timestamp > %s ORDER BY timestamp DESC
+                ", $timestamp ), ARRAY_A );
+        if ( ! empty( $move_log ) ) {
+            $data['active_countries'] = $move_log[0]['countries'] ?? 0;
+            $data['active_states'] = $move_log[0]['states'] ?? 0;
+            $data['active_counties'] = $move_log[0]['counties'] ?? 0;
+        }
+
+//        $grid_total = $wpdb->get_results( "
+//                SELECT count( DISTINCT(g.admin0_grid_id) ) as countries, count( DISTINCT(g.admin1_grid_id) ) as states, count( DISTINCT(g.admin2_grid_id) ) as counties
+//                FROM $wpdb->dt_location_grid as g;
+//                ", ARRAY_A );
+//        if ( ! empty( $grid_total ) ) {
+//            $data['total_countries'] = $grid_total[0]['countries'] ?? '256';
+//            $data['total_states'] = $grid_total[0]['states'] ?? '3,612';
+//            $data['total_counties'] = $grid_total[0]['counties'] ?? '45,960';
+//        }
+
+
+        $results = $wpdb->get_results( $wpdb->prepare( "
+                SELECT action, category, lng, lat, label, payload, timestamp FROM $wpdb->dt_movement_log WHERE timestamp > %s ORDER BY timestamp DESC
+                ", $timestamp ), ARRAY_A );
+        foreach ( $results as $result ){
+            $category = $result['category'];
+            $action = $result['action'];
+            $initials = '';
+            $in_language = '';
+            $location_label = '';
+            $payload = maybe_unserialize($result['payload']);
+            $note = Movement_Shortcode_Utilities::create_note_data( $category, $action, $initials, $in_language, $location_label, $payload );
+
+            // count blessing type
+            $data[$note['type']]++;
+        }
+
+        $language = [];
+        foreach( $results as $result ){
+            $payload = maybe_unserialize($result['payload']);
+            if ( ! isset( $payload['language_code'] ) ) {
+                continue;
+            }
+            if ( ! isset( $payload['language_name'] ) ) {
+                continue;
+            }
+            if ( ! isset( $language[$payload['language_name']] ) ) {
+                $language[$payload['language_name']] = 0;
+            }
+
+            $language[$payload['language_name']]++;
+        }
+        arsort($language);
+        $data['top_10_languages'] = array_keys( array_slice($language, 0, 10) );
+
+        $top_locations = $wpdb->get_results( $wpdb->prepare( "
+                SELECT c.name, count(c.name) as count
+                FROM $wpdb->dt_movement_log as ml
+                JOIN $wpdb->dt_location_grid as g ON g.grid_id=ml.grid_id
+                LEFT JOIN $wpdb->dt_location_grid as c ON g.admin0_grid_id=c.grid_id
+                WHERE timestamp > %s
+                GROUP BY c.name
+                ORDER BY count DESC
+                LIMIT 10;
+                ", $timestamp ), ARRAY_A );
+        foreach( $top_locations as $location ){
+            $data['top_10_locations'][] = $location['name'];
+        }
+
+        return $data;
     }
 
 
