@@ -101,16 +101,21 @@ class Movement_Shortcode_Stats_Last100hours
                         <h3>Recent Locations</h3>
                         <hr>
                         <p>Countries<br>
-                            <span class="progress-counter" id="active_countries"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span> <span class="progress-counter">/</span>
-                            <span class="progress-counter" id="total_countries"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /><br></p>
+                            <span class="progress-counter" id="active_countries"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span>
+<!--                            <span class="progress-counter">/</span>-->
+<!--                            <span class="progress-counter" id="total_countries"><img src="--><?php //echo plugin_dir_url(__DIR__) ?><!--/spinner.svg" width="50px" /><br></p>-->
                         <p>
                             States<br>
-                            <span class="progress-counter" id="active_states"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span> <span class="progress-counter">/</span>
-                            <span class="progress-counter" id="total_states"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
+                            <span class="progress-counter" id="active_states"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span>
+<!--                            <span class="progress-counter">/</span>-->
+<!--                            <span class="progress-counter" id="total_states"><img src="--><?php //echo plugin_dir_url(__DIR__) ?><!--/spinner.svg" width="50px" /></span><br>-->
+                        </p>
                         <p>
                             Counties/Districts<br>
-                            <span class="progress-counter" id="active_counties"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span> <span class="progress-counter">/</span>
-                            <span class="progress-counter" id="total_counties"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span><br></p>
+                            <span class="progress-counter" id="active_counties"><img src="<?php echo plugin_dir_url(__DIR__) ?>/spinner.svg" width="50px" /></span>
+<!--                            <span class="progress-counter">/</span>-->
+<!--                            <span class="progress-counter" id="total_counties"><img src="--><?php //echo plugin_dir_url(__DIR__) ?><!--/spinner.svg" width="50px" /></span><br>-->
+                        </p>
                     </div>
                     <div class="cell medium-2">
                         <img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) )?>images/hero_with_clock.svg" alt="welcome-graphic" />
