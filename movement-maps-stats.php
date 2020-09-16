@@ -66,6 +66,14 @@ class Movement_Maps_Stats {
             }
         }
 
+        // load integrations (must start with integration-)
+        $files = scandir(plugin_dir_path(__FILE__) . 'integrations');
+        foreach ( $files as $file ) {
+            if ( 'integration' === substr( $file, 0, 11 ) ){
+                require_once( plugin_dir_path(__FILE__) . 'integrations/' . $file );
+            }
+        }
+
         if ( is_admin() ) {
             add_action( "admin_menu", [ $this, "register_menu" ] );
             // adds links to the plugin description area in the plugin admin list.
@@ -158,6 +166,24 @@ class Movement_Maps_Stats {
             <tr>
                 <td>
                     <?php do_action( 'movement_maps_stats_shortcodes_list' ) ?>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <!-- End Box -->
+
+        <!-- Box -->
+        <table class="widefat striped">
+            <thead>
+            <tr>
+                <th>Integrations</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <?php echo Movement_Maps_Stats_Post_To_WP::instance()->html_template(); ?>
                 </td>
             </tr>
             </tbody>
