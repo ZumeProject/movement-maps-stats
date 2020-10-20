@@ -363,7 +363,7 @@ class Movement_Shortcode_Map_Last100hours
                     window.timer_limit = 0
                     function set_timer() {
                         clear_timer()
-                        if ( window.timer_limit > 60 ){
+                        if ( window.timer_limit > 30 ){
                             return
                         }
                         window.refresh_timer = setTimeout(function(){
