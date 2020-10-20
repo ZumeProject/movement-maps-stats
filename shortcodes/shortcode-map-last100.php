@@ -360,10 +360,15 @@ class Movement_Shortcode_Map_Last100hours
                     window.greatest_blessing = 'visible'
 
                     window.refresh_timer = ''
+                    window.timer_limit = 0
                     function set_timer() {
                         clear_timer()
+                        if ( window.timer_limit > 60 ){
+                            return
+                        }
                         window.refresh_timer = setTimeout(function(){
                             get_points( )
+                            window.timer_limit++
                         }, 10000);
                     }
                     function clear_timer() {
@@ -678,8 +683,6 @@ class Movement_Shortcode_Map_Last100hours
                         jQuery('.greatest-blessing-count').empty().append(points.counts.greatest_blessing)
 
                     }
-
-
 
                     function load_countries_dropdown( points ) {
                         window.selected_country = country_dropdown.val()
