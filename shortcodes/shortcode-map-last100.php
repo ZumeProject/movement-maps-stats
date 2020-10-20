@@ -364,6 +364,9 @@ class Movement_Shortcode_Map_Last100hours
                     function set_timer() {
                         clear_timer()
                         if ( window.timer_limit > 30 ){
+                            if ( jQuery('#live-data-warning').length < 1 ){
+                                jQuery('#activity-wrapper').prepend(`<span id="live-data-warning" class="caption">Refresh limit reached. Refresh the page to restart live data.</span>`)
+                            }
                             return
                         }
                         window.refresh_timer = setTimeout(function(){
