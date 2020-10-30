@@ -201,7 +201,7 @@ class Movement_Shortcode_Utilities {
             case 'leading_9':
             case 'leading_10':
                 if ( isset($payload['group_size']) && $payload['group_size'] > 1 ) {
-                    $data['note'] =  $initials . ' is leading a group of '. $payload['group_size'] .' through session ' . $action . $in_language . '! ' . $location_label;
+                    $data['note'] =  $initials . ' is leading a group of '. $payload['group_size'] .' through session ' . str_replace( '_', '', substr( $action, -2, 2 ) ) . $in_language . '! ' . $location_label;
                 } else {
                     $data['note'] =  $initials . ' is leading a group through session ' . str_replace( '_', '', substr( $action, -2, 2 ) ) . $in_language . '! ' . $location_label;
                 }
