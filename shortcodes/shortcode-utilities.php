@@ -181,111 +181,86 @@ class Movement_Shortcode_Utilities {
             'type' => 'blessing',
         ];
 
-        switch( $category ) {
-            case 'leading':
-                switch($action){
-                    case 'starting_group':
-                        $data['note'] =  $initials . ' is starting a training group' . $in_language . '! ' . $location_label;
-                        $data['type'] = 'greater_blessing';
-                        break;
-                    case 'building_group':
-                        $data['note'] =  $initials . ' is growing a training group' . $in_language . '! ' . $location_label;
-                        $data['type'] = 'greater_blessing';
-                        break;
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                    case '10':
-                        if ( isset($payload['group_size']) && $payload['group_size'] > 1 ) {
-                            $data['note'] =  $initials . ' is leading a group of '. $payload['group_size'] .' through session ' . $action . $in_language . '! ' . $location_label;
-                        } else {
-                            $data['note'] =  $initials . ' is leading a group through session ' . $action . $in_language . '! ' . $location_label;
-                        }
-                        $data['type'] = 'greatest_blessing';
-                        break;
-                } // leading actions
+        switch( $action ) {
+            case 'starting_group':
+                $data['note'] =  $initials . ' is starting a training group' . $in_language . '! ' . $location_label;
+                $data['type'] = 'greater_blessing';
                 break;
-            case 'joining':
-                switch($action){
-                    case 'coaching':
-                        $data['note'] =  $initials . ' is requesting coaching from Zúme coaches' . $in_language . '! ' . $location_label;
-                        $data['type'] = 'great_blessing';
-                        break;
-                    case 'zume_training':
-                        $data['note'] =  $initials . ' is registering for Zúme training' . $in_language . '! ' . $location_label;
-                        $data['type'] = 'great_blessing';
-                        break;
-                    case 'zume_vision':
-                        $data['note'] =  $initials . ' is joining the Zúme community to engage in Disciple Making Movements' . $in_language . '! ' . $location_label;
-                        $data['type'] = 'greatest_blessing';
-                        break;
-                } // leading actions
+            case 'building_group':
+                $data['note'] =  $initials . ' is growing a training group' . $in_language . '! ' . $location_label;
+                $data['type'] = 'greater_blessing';
                 break;
-            case 'studying':
-                switch($action){
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                    case '10':
-                    case '11':
-                    case '12':
-                    case '13':
-                    case '14':
-                    case '15':
-                    case '16':
-                    case '17':
-                    case '18':
-                    case '19':
-                    case '20':
-                    case '21':
-                    case '22':
-                    case '23':
-                    case '24':
-                    case '25':
-                    case '26':
-                    case '27':
-                    case '28':
-                    case '29':
-                    case '30':
-                    case '31':
-                    case '32':
-                        $title = ' disciple making movement principles';
-                        if ( isset( $payload['title'] ) && ! empty( $payload['title'] ) ) {
-                            $title = ' "' . $payload['title'] . '"';
-                        }
-                        $data['note'] =  $initials . ' is studying' . $title . $in_language . '! ' . $location_label;
-                        $data['type'] = 'blessing';
-                        break;
-                    default:
-                        $string = '';
-                        if ( isset( $payload['note'] ) && ! empty( $payload['note'] ) ) {
-                            $string = esc_html( wp_unslash( $payload['note'] ) ) ;
-                        }
-                        $data['note'] =  $initials . ' ' . $string . $in_language . '! ' . $location_label;
-                        $data['type'] = 'blessing';
-                        break;
+            case 'leading_1':
+            case 'leading_2':
+            case 'leading_3':
+            case 'leading_4':
+            case 'leading_5':
+            case 'leading_6':
+            case 'leading_7':
+            case 'leading_8':
+            case 'leading_9':
+            case 'leading_10':
+                if ( isset($payload['group_size']) && $payload['group_size'] > 1 ) {
+                    $data['note'] =  $initials . ' is leading a group of '. $payload['group_size'] .' through session ' . $action . $in_language . '! ' . $location_label;
+                } else {
+                    $data['note'] =  $initials . ' is leading a group through session ' . str_replace( '_', '', substr( $action, -2, 2 ) ) . $in_language . '! ' . $location_label;
                 }
+                $data['type'] = 'greatest_blessing';
                 break;
-            case 'committing':
-                switch($action){
-                    case 'updated_3_month':
-                    default:
-                        $data['note'] =  $initials . '  made a three month plan to multiply disciples' . $in_language . '! ' . $location_label;
-                        $data['type'] = 'great_blessing';
-                        break;
+            case 'zume_training':
+                $data['note'] =  $initials . ' is registering for Zúme training' . $in_language . '! ' . $location_label;
+                $data['type'] = 'great_blessing';
+                break;
+            case 'zume_vision':
+                $data['note'] =  $initials . ' is joining the Zúme community to engage in Disciple Making Movements' . $in_language . '! ' . $location_label;
+                $data['type'] = 'greatest_blessing';
+                break;
+            case 'coaching':
+                $data['note'] =  $initials . ' is requesting coaching from Zúme coaches' . $in_language . '! ' . $location_label;
+                $data['type'] = 'great_blessing';
+                break;
+            case 'studying_1':
+            case 'studying_2':
+            case 'studying_3':
+            case 'studying_4':
+            case 'studying_5':
+            case 'studying_6':
+            case 'studying_7':
+            case 'studying_8':
+            case 'studying_9':
+            case 'studying_10':
+            case 'studying_11':
+            case 'studying_12':
+            case 'studying_13':
+            case 'studying_14':
+            case 'studying_15':
+            case 'studying_16':
+            case 'studying_17':
+            case 'studying_18':
+            case 'studying_19':
+            case 'studying_20':
+            case 'studying_21':
+            case 'studying_22':
+            case 'studying_23':
+            case 'studying_24':
+            case 'studying_25':
+            case 'studying_26':
+            case 'studying_27':
+            case 'studying_28':
+            case 'studying_29':
+            case 'studying_30':
+            case 'studying_31':
+            case 'studying_32':
+                $title = ' disciple making movement principles';
+                if ( isset( $payload['title'] ) && ! empty( $payload['title'] ) ) {
+                    $title = ' "' . $payload['title'] . '"';
                 }
+                $data['note'] =  $initials . ' is studying' . $title . $in_language . '! ' . $location_label;
+                $data['type'] = 'blessing';
+                break;
+            case 'updated_3_month':
+                $data['note'] =  $initials . '  made a three month plan to multiply disciples' . $in_language . '! ' . $location_label;
+                $data['type'] = 'great_blessing';
                 break;
             default:
                 break;

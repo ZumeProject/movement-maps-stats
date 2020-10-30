@@ -183,7 +183,6 @@ class Movement_Maps_Stats {
             <tbody>
             <tr>
                 <td>
-                    <?php echo Movement_Maps_Stats_Post_To_WP::instance()->html_template(); ?>
                 </td>
             </tr>
             </tbody>

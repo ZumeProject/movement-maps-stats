@@ -396,15 +396,6 @@ class Movement_Shortcode_Stats_Last100hours
             $data['active_counties'] = $move_log[0]['counties'] ?? 0;
         }
 
-//        $grid_total = $wpdb->get_results( "
-//                SELECT count( DISTINCT(g.admin0_grid_id) ) as countries, count( DISTINCT(g.admin1_grid_id) ) as states, count( DISTINCT(g.admin2_grid_id) ) as counties
-//                FROM $wpdb->dt_location_grid as g;
-//                ", ARRAY_A );
-//        if ( ! empty( $grid_total ) ) {
-//            $data['total_countries'] = $grid_total[0]['countries'] ?? '256';
-//            $data['total_states'] = $grid_total[0]['states'] ?? '3,612';
-//            $data['total_counties'] = $grid_total[0]['counties'] ?? '45,960';
-//        }
 
 
         $results = $wpdb->get_results( $wpdb->prepare( "
