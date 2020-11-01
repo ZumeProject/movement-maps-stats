@@ -2,7 +2,7 @@
 
 class Movement_Shortcode_Utilities {
 
-    public static function create_initials( $longitude, $latitude, array $payload ) : string {
+    public static function create_initials( $longitude, $latitude, $payload ) : string {
         $letters = [
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'S',
             'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'E', 'A', 'R', 'I',
