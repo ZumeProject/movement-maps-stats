@@ -44,7 +44,7 @@ class Movement_Shortcode_Utilities {
             $time_string = self::_time_elapsed_string('@'.$timestamp);
         }
         else if ( $timestamp > strtotime('today+00:00') + $timezone_offset ) {
-            $time_string = date( 'g:i a', $adjusted_time );
+            $time_string = date( 'g:i a', $adjusted_time ); 
         }
         else {
             $time_string = date( 'D g:i a', $adjusted_time );
