@@ -80,14 +80,14 @@ class Movement_Shortcode_Map_Last100hours
             Custom Styles
              */
             .blessing {
-                background-color: #21336A;
+                background-color: #FC2914;
                 border: 1px solid white;
                 color: white;
                 font-weight: bold;
                 margin:0;
             }
             .great-blessing {
-                background-color: #2CACE2;
+                background-color: #ff9900;
                 border: 1px solid white;
                 color: white;
                 font-weight: bold;
@@ -520,7 +520,7 @@ class Movement_Shortcode_Map_Last100hours
                                         [8, 14],
                                     ]
                                 },
-                                'circle-color': '#21336A'
+                                'circle-color': '#FC2914'
                             },
                             filter: ["==", "type", "blessing" ]
                         });
@@ -542,7 +542,7 @@ class Movement_Shortcode_Map_Last100hours
                                         [8, 16],
                                     ]
                                 },
-                                'circle-color': '#2CACE2'
+                                'circle-color': '#ff9900'
                             },
                             filter: ["==", "type", "great_blessing" ]
                         });
@@ -576,12 +576,12 @@ class Movement_Shortcode_Map_Last100hours
                             source: 'pointsSource',
                             paint: {
                                 'circle-radius': {
-                                    'base': 10,
+                                    'base': 8,
                                     'stops': [
-                                        [3, 10],
-                                        [4, 14],
-                                        [5, 18],
-                                        [6, 22],
+                                        [3, 8],
+                                        [4, 12],
+                                        [5, 16],
+                                        [6, 20],
                                         [7, 22],
                                         [8, 22],
                                     ]
