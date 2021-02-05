@@ -44,7 +44,7 @@ class Movement_Shortcode_Utilities {
             $time_string = self::_time_elapsed_string('@'.$timestamp);
         }
         else if ( $timestamp > strtotime('today+00:00') + $timezone_offset ) {
-            $time_string = date( 'g:i a', $adjusted_time ); 
+            $time_string = date( 'g:i a', $adjusted_time );
         }
         else {
             $time_string = date( 'D g:i a', $adjusted_time );
@@ -198,6 +198,13 @@ class Movement_Shortcode_Utilities {
             case 'leading_6':
             case 'leading_7':
             case 'leading_8':
+                if ( isset($payload['group_size']) && $payload['group_size'] > 1 ) {
+                    $data['note'] =  $initials . ' is leading a group of '. $payload['group_size'] .' through session ' . str_replace( '_', '', substr( $action, -2, 2 ) ) . $in_language . '! ' . $location_label;
+                } else {
+                    $data['note'] =  $initials . ' is leading a group through session ' . str_replace( '_', '', substr( $action, -2, 2 ) ) . $in_language . '! ' . $location_label;
+                }
+                $data['type'] = 'great_blessing';
+                break;
             case 'leading_9':
             case 'leading_10':
                 if ( isset($payload['group_size']) && $payload['group_size'] > 1 ) {
@@ -205,7 +212,7 @@ class Movement_Shortcode_Utilities {
                 } else {
                     $data['note'] =  $initials . ' is leading a group through session ' . str_replace( '_', '', substr( $action, -2, 2 ) ) . $in_language . '! ' . $location_label;
                 }
-                $data['type'] = 'greatest_blessing';
+                $data['type'] = 'greater_blessing';
                 break;
             case 'zume_training':
                 $data['note'] =  $initials . ' is registering for Zúme training' . $in_language . '! ' . $location_label;
@@ -213,7 +220,7 @@ class Movement_Shortcode_Utilities {
                 break;
             case 'zume_vision':
                 $data['note'] =  $initials . ' is joining the Zúme community to engage in Disciple Making Movements' . $in_language . '! ' . $location_label;
-                $data['type'] = 'greatest_blessing';
+                $data['type'] = 'great_blessing';
                 break;
             case 'coaching':
                 $data['note'] =  $initials . ' is requesting coaching from Zúme coaches' . $in_language . '! ' . $location_label;
